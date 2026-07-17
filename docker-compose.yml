@@ -1,0 +1,11 @@
+services:
+  qshield:
+    build: .
+    ports:
+      - "8004:8000"
+    volumes:
+      - qshield_data:/app/app/data
+    environment:
+      - QSHIELD_DB_PATH=/app/app/data/qshield.db
+volumes:
+  qshield_data:
