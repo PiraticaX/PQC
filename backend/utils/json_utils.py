@@ -449,3 +449,30 @@ def json_size(
         )
 
     )
+# ============================================================
+# Backward Compatibility Aliases
+# ============================================================
+
+def serialize_json(
+    data: Any,
+) -> str:
+    """
+    Backward compatible JSON serializer.
+
+    Alias for serialize().
+    """
+
+    return serialize(data)
+
+
+
+def deserialize_json(
+    value: str,
+) -> Any:
+    """
+    Backward compatible JSON deserializer.
+
+    Alias for deserialize().
+    """
+
+    return deserialize(value)
