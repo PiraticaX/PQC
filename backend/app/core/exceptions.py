@@ -2,294 +2,604 @@
 QShield Enterprise
 ==================
 
-Centralized exception hierarchy.
+Exception Handling Infrastructure.
 
-Why this exists
----------------
-Using custom exceptions provides:
+Responsibilities:
 
-- Consistent error handling
-- Better API responses
-- Cleaner service code
-- Easier debugging
-- Future integration with monitoring systems
+- Centralized application exceptions
+- HTTP error mapping
+- Security exception handling
+- Database exception handling
+- API error formatting
+- Global FastAPI exception handlers
 
-Services should raise these exceptions instead of generic Exception.
-FastAPI exception handlers can later convert these into structured JSON
-responses.
-
-Example:
-
-    raise AssetNotFoundError(asset_id)
-
-instead of
-
-    raise Exception("Asset not found")
 """
 
 from __future__ import annotations
 
+
+import logging
+
+
 from typing import Any
 
 
-class QShieldException(Exception):
-    """
-    Base exception for the entire application.
+from fastapi import FastAPI
+from fastapi import Request
+from fastapi import status
 
-    Every custom exception should inherit from this class.
+
+from fastapi.exceptions import RequestValidationError
+
+
+from fastapi.responses import JSONResponse
+
+
+from sqlalchemy.exc import SQLAlchemyError
+
+
+
+logger = logging.getLogger(__name__)
+
+
+
+# ============================================================
+# Base Exceptions
+# ============================================================
+
+
+class QShieldException(
+    Exception
+):
+    """
+    Base application exception.
+
+    All internal exceptions inherit
+    from this class.
     """
 
     def __init__(
         self,
         message: str,
-        *,
-        code: str = "QSHIELD_ERROR",
-        details: Any | None = None,
-    ) -> None:
-        super().__init__(message)
+        code: str = "INTERNAL_ERROR",
+        details: dict[str, Any] | None = None,
+    ):
 
         self.message = message
+
         self.code = code
-        self.details = details
 
-    def to_dict(self) -> dict:
-        """
-        Serialize exception into a JSON-friendly structure.
-        """
+        self.details = details or {}
 
-        return {
-            "success": False,
-            "error": {
-                "code": self.code,
-                "message": self.message,
-                "details": self.details,
-            },
+
+        super().__init__(
+
+            message
+
+        )
+
+
+
+# ============================================================
+# Authentication Exceptions
+# ============================================================
+
+
+class AuthenticationException(
+    QShieldException
+):
+    """
+    Authentication failure.
+    """
+
+    def __init__(
+        self,
+        message: str = "Authentication failed.",
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="AUTHENTICATION_FAILED",
+
+        )
+
+
+
+class TokenExpiredException(
+    AuthenticationException
+):
+    """
+    Expired token.
+    """
+
+    def __init__(self):
+
+        super().__init__(
+
+            "Token expired."
+
+        )
+
+
+        self.code = "TOKEN_EXPIRED"
+
+
+
+class InvalidTokenException(
+    AuthenticationException
+):
+    """
+    Invalid token.
+    """
+
+    def __init__(self):
+
+        super().__init__(
+
+            "Invalid token."
+
+        )
+
+
+        self.code = "INVALID_TOKEN"
+
+
+
+# ============================================================
+# Authorization Exceptions
+# ============================================================
+
+
+class PermissionDeniedException(
+    QShieldException
+):
+    """
+    User lacks permission.
+    """
+
+    def __init__(
+        self,
+        resource: str | None = None,
+    ):
+
+        super().__init__(
+
+            message="Permission denied.",
+
+            code="PERMISSION_DENIED",
+
+            details={
+
+                "resource":
+
+                    resource
+
+            }
+
+        )
+
+
+
+class AccessDeniedException(
+    QShieldException
+):
+    """
+    Access forbidden.
+    """
+
+    def __init__(self):
+
+        super().__init__(
+
+            message="Access denied.",
+
+            code="ACCESS_DENIED",
+
+        )
+
+
+
+# ============================================================
+# Resource Exceptions
+# ============================================================
+
+
+class ResourceNotFoundException(
+    QShieldException
+):
+    """
+    Resource missing.
+    """
+
+    def __init__(
+        self,
+        resource: str,
+    ):
+
+        super().__init__(
+
+            message=f"{resource} not found.",
+
+            code="RESOURCE_NOT_FOUND",
+
+        )
+
+
+
+class ResourceAlreadyExistsException(
+    QShieldException
+):
+    """
+    Duplicate resource.
+    """
+
+    def __init__(
+        self,
+        resource: str,
+    ):
+
+        super().__init__(
+
+            message=f"{resource} already exists.",
+
+            code="RESOURCE_EXISTS",
+
+        )
+
+
+
+# ============================================================
+# Validation Exceptions
+# ============================================================
+
+
+class ValidationException(
+    QShieldException
+):
+    """
+    Business validation failure.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        fields: dict[str, Any] | None = None,
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="VALIDATION_ERROR",
+
+            details={
+
+                "fields":
+
+                    fields or {}
+
+            }
+
+        )
+
+
+
+# ============================================================
+# Security Exceptions
+# ============================================================
+
+
+class EncryptionException(
+    QShieldException
+):
+    """
+    Cryptography failure.
+    """
+
+    def __init__(
+        self,
+        message: str = "Encryption operation failed.",
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="ENCRYPTION_ERROR",
+
+        )
+
+
+
+class KeyManagementException(
+    QShieldException
+):
+    """
+    Key lifecycle failure.
+    """
+
+    def __init__(
+        self,
+        message: str = "Key management operation failed.",
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="KEY_MANAGEMENT_ERROR",
+
+        )
+
+
+
+class PQCException(
+    QShieldException
+):
+    """
+    Post quantum cryptography failure.
+    """
+
+    def __init__(
+        self,
+        message: str = "PQC operation failed.",
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="PQC_ERROR",
+
+        )
+
+
+
+# ============================================================
+# Database Exceptions
+# ============================================================
+
+
+class DatabaseException(
+    QShieldException
+):
+    """
+    Database operation failure.
+    """
+
+    def __init__(
+        self,
+        message: str = "Database operation failed.",
+    ):
+
+        super().__init__(
+
+            message=message,
+
+            code="DATABASE_ERROR",
+
+        )
+
+
+
+# ============================================================
+# Exception Response Builder
+# ============================================================
+
+
+def exception_response(
+    exc: QShieldException,
+):
+    """
+    Convert exception to API response.
+    """
+
+    return JSONResponse(
+
+        status_code=status.HTTP_400_BAD_REQUEST,
+
+        content={
+
+            "success":
+
+                False,
+
+
+            "error":
+
+                {
+
+                    "code":
+
+                        exc.code,
+
+
+                    "message":
+
+                        exc.message,
+
+
+                    "details":
+
+                        exc.details,
+
+                }
+
         }
 
+    )
 
-# ============================================================================
-# Asset Exceptions
-# ============================================================================
 
 
-class AssetError(QShieldException):
-    """Base asset exception."""
+# ============================================================
+# FastAPI Exception Handlers
+# ============================================================
 
 
-class AssetNotFoundError(AssetError):
-    def __init__(self, asset_id: int):
-        super().__init__(
-            message=f"Asset '{asset_id}' was not found.",
-            code="ASSET_NOT_FOUND",
-            details={"asset_id": asset_id},
-        )
+async def qshield_exception_handler(
+    request: Request,
+    exc: QShieldException,
+):
+    """
+    Handle internal application exceptions.
+    """
 
+    logger.error(
 
-class AssetAlreadyExistsError(AssetError):
-    def __init__(self, asset_name: str):
-        super().__init__(
-            message=f"Asset '{asset_name}' already exists.",
-            code="ASSET_ALREADY_EXISTS",
-            details={"asset": asset_name},
-        )
+        exc.message,
 
+        extra={
 
-class InvalidAssetError(AssetError):
-    def __init__(self, reason: str):
-        super().__init__(
-            message=f"Invalid asset: {reason}",
-            code="INVALID_ASSET",
-        )
+            "path":
 
+                request.url.path,
 
-# ============================================================================
-# Scan Exceptions
-# ============================================================================
 
+            "error_code":
 
-class ScanError(QShieldException):
-    """Base scan exception."""
+                exc.code,
 
+        },
 
-class ScanAlreadyRunningError(ScanError):
-    def __init__(self, asset_id: int):
-        super().__init__(
-            message="A scan is already running for this asset.",
-            code="SCAN_ALREADY_RUNNING",
-            details={"asset_id": asset_id},
-        )
+    )
 
 
-class ScanFailedError(ScanError):
-    def __init__(self, reason: str):
-        super().__init__(
-            message=f"Scan failed: {reason}",
-            code="SCAN_FAILED",
-        )
+    return exception_response(
 
+        exc
 
-class ScanTimeoutError(ScanError):
-    def __init__(self):
-        super().__init__(
-            message="Scan exceeded the configured timeout.",
-            code="SCAN_TIMEOUT",
-        )
+    )
 
 
-# ============================================================================
-# TLS
-# ============================================================================
 
+async def validation_exception_handler(
+    request: Request,
+    exc: RequestValidationError,
+):
+    """
+    Handle request validation errors.
+    """
 
-class TLSException(QShieldException):
-    """Base TLS exception."""
+    return JSONResponse(
 
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
 
-class TLSConnectionError(TLSException):
-    def __init__(self, host: str):
-        super().__init__(
-            message=f"Unable to establish TLS connection to '{host}'.",
-            code="TLS_CONNECTION_FAILED",
-            details={"host": host},
-        )
+        content={
 
+            "success":
 
-class CertificateValidationError(TLSException):
-    def __init__(self, reason: str):
-        super().__init__(
-            message=f"Certificate validation failed: {reason}",
-            code="CERTIFICATE_VALIDATION_FAILED",
-        )
+                False,
 
 
-# ============================================================================
-# DNS
-# ============================================================================
+            "error":
 
+                {
 
-class DNSException(QShieldException):
-    """Base DNS exception."""
+                    "code":
 
+                        "VALIDATION_ERROR",
 
-class DNSLookupError(DNSException):
-    def __init__(self, domain: str):
-        super().__init__(
-            message=f"DNS lookup failed for '{domain}'.",
-            code="DNS_LOOKUP_FAILED",
-            details={"domain": domain},
-        )
 
+                    "message":
 
-# ============================================================================
-# PQC
-# ============================================================================
+                        "Invalid request data.",
 
 
-class PQCException(QShieldException):
-    """Base PQC exception."""
+                    "details":
 
+                        exc.errors(),
 
-class OQSUnavailableError(PQCException):
-    def __init__(self):
-        super().__init__(
-            message="liboqs runtime is unavailable.",
-            code="OQS_RUNTIME_UNAVAILABLE",
-        )
+                }
 
+        }
 
-class UnsupportedAlgorithmError(PQCException):
-    def __init__(self, algorithm: str):
-        super().__init__(
-            message=f"Unsupported algorithm '{algorithm}'.",
-            code="UNSUPPORTED_ALGORITHM",
-            details={"algorithm": algorithm},
-        )
+    )
 
 
-# ============================================================================
-# Reporting
-# ============================================================================
 
+async def database_exception_handler(
+    request: Request,
+    exc: SQLAlchemyError,
+):
+    """
+    Handle database failures.
+    """
 
-class ReportException(QShieldException):
-    """Base report exception."""
+    logger.exception(
 
+        "Database error",
 
-class ReportGenerationError(ReportException):
-    def __init__(self, reason: str):
-        super().__init__(
-            message=f"Report generation failed: {reason}",
-            code="REPORT_GENERATION_FAILED",
-        )
+    )
 
 
-# ============================================================================
-# Authentication
-# ============================================================================
+    return JSONResponse(
 
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
 
-class AuthenticationError(QShieldException):
-    def __init__(self):
-        super().__init__(
-            message="Authentication failed.",
-            code="AUTHENTICATION_FAILED",
-        )
+        content={
 
+            "success":
 
-class AuthorizationError(QShieldException):
-    def __init__(self):
-        super().__init__(
-            message="Permission denied.",
-            code="PERMISSION_DENIED",
-        )
+                False,
 
 
-# ============================================================================
-# Validation
-# ============================================================================
+            "error":
 
+                {
 
-class ValidationException(QShieldException):
-    def __init__(self, message: str):
-        super().__init__(
-            message=message,
-            code="VALIDATION_ERROR",
-        )
+                    "code":
 
+                        "DATABASE_ERROR",
 
-# ============================================================================
-# Database
-# ============================================================================
 
+                    "message":
 
-class DatabaseException(QShieldException):
-    """Base database exception."""
+                        "Database operation failed.",
 
+                }
 
-class DatabaseConnectionError(DatabaseException):
-    def __init__(self):
-        super().__init__(
-            message="Unable to connect to the database.",
-            code="DATABASE_CONNECTION_FAILED",
-        )
+        }
 
+    )
 
-class DatabaseIntegrityError(DatabaseException):
-    def __init__(self, message: str):
-        super().__init__(
-            message=message,
-            code="DATABASE_INTEGRITY_ERROR",
-        )
 
 
-# ============================================================================
-# Internal Errors
-# ============================================================================
+# ============================================================
+# Registration
+# ============================================================
 
 
-class InternalServerException(QShieldException):
-    def __init__(self):
-        super().__init__(
-            message="An unexpected internal error occurred.",
-            code="INTERNAL_SERVER_ERROR",
-        )
+def register_exception_handlers(
+    app: FastAPI,
+):
+    """
+    Register all global exception handlers.
+    """
+
+    app.add_exception_handler(
+
+        QShieldException,
+
+        qshield_exception_handler,
+
+    )
+
+
+    app.add_exception_handler(
+
+        RequestValidationError,
+
+        validation_exception_handler,
+
+    )
+
+
+    app.add_exception_handler(
+
+        SQLAlchemyError,
+
+        database_exception_handler,
+
+    )

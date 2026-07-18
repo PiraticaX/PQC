@@ -2,374 +2,587 @@
 QShield Enterprise
 ==================
 
-Application-wide constants.
+Core System Constants.
 
-Do NOT hardcode strings or numeric values throughout the codebase.
-Everything shared across multiple modules should live here.
+Centralized immutable values used across:
 
-This file intentionally contains no business logic.
+- API layer
+- Services layer
+- Database models
+- Security engine
+- PQC modules
+- Compliance modules
+- Background workers
+
 """
 
 from __future__ import annotations
 
-from enum import Enum
 
 
-# ============================================================================
+# ============================================================
 # Application
-# ============================================================================
-
-APP_VENDOR = "QShield"
-
-DEFAULT_USER_AGENT = (
-    "QShield Enterprise Security Scanner "
-    "(Authorized Defensive Assessment Platform)"
-)
+# ============================================================
 
 
-# ============================================================================
-# Asset Status
-# ============================================================================
+APP_NAME = "QShield Enterprise"
 
 
-class AssetStatus(str, Enum):
-    """
-    Current lifecycle state of an asset.
-    """
-
-    PENDING = "pending"
-
-    QUEUED = "queued"
-
-    SCANNING = "scanning"
-
-    COMPLETED = "completed"
-
-    FAILED = "failed"
-
-    CANCELLED = "cancelled"
+APP_VERSION = "1.0.0"
 
 
-# ============================================================================
+DEFAULT_API_VERSION = "v1"
+
+
+
+# ============================================================
+# Environment
+# ============================================================
+
+
+ENV_DEVELOPMENT = "development"
+
+
+ENV_TESTING = "testing"
+
+
+ENV_STAGING = "staging"
+
+
+ENV_PRODUCTION = "production"
+
+
+
+# ============================================================
+# User Roles
+# ============================================================
+
+
+ROLE_SUPER_ADMIN = "super_admin"
+
+
+ROLE_ADMIN = "admin"
+
+
+ROLE_SECURITY_ANALYST = "security_analyst"
+
+
+ROLE_AUDITOR = "auditor"
+
+
+ROLE_USER = "user"
+
+
+ROLE_SERVICE_ACCOUNT = "service_account"
+
+
+
+SYSTEM_ROLES = [
+
+    ROLE_SUPER_ADMIN,
+
+    ROLE_ADMIN,
+
+    ROLE_SECURITY_ANALYST,
+
+    ROLE_AUDITOR,
+
+    ROLE_USER,
+
+    ROLE_SERVICE_ACCOUNT,
+
+]
+
+
+
+# ============================================================
+# Permission Actions
+# ============================================================
+
+
+PERMISSION_READ = "read"
+
+
+PERMISSION_WRITE = "write"
+
+
+PERMISSION_CREATE = "create"
+
+
+PERMISSION_UPDATE = "update"
+
+
+PERMISSION_DELETE = "delete"
+
+
+PERMISSION_EXECUTE = "execute"
+
+
+PERMISSION_ADMIN = "admin"
+
+
+
+# ============================================================
+# User Status
+# ============================================================
+
+
+USER_ACTIVE = "active"
+
+
+USER_INACTIVE = "inactive"
+
+
+USER_SUSPENDED = "suspended"
+
+
+USER_PENDING = "pending"
+
+
+USER_DELETED = "deleted"
+
+
+
+# ============================================================
+# Organization Status
+# ============================================================
+
+
+ORG_ACTIVE = "active"
+
+
+ORG_SUSPENDED = "suspended"
+
+
+ORG_PENDING = "pending"
+
+
+
+# ============================================================
+# Security Severity Levels
+# ============================================================
+
+
+SEVERITY_INFO = "info"
+
+
+SEVERITY_LOW = "low"
+
+
+SEVERITY_MEDIUM = "medium"
+
+
+SEVERITY_HIGH = "high"
+
+
+SEVERITY_CRITICAL = "critical"
+
+
+
+SEVERITY_LEVELS = [
+
+    SEVERITY_INFO,
+
+    SEVERITY_LOW,
+
+    SEVERITY_MEDIUM,
+
+    SEVERITY_HIGH,
+
+    SEVERITY_CRITICAL,
+
+]
+
+
+
+# ============================================================
+# Risk Levels
+# ============================================================
+
+
+RISK_LOW = "low"
+
+
+RISK_MEDIUM = "medium"
+
+
+RISK_HIGH = "high"
+
+
+RISK_CRITICAL = "critical"
+
+
+
+RISK_LEVELS = [
+
+    RISK_LOW,
+
+    RISK_MEDIUM,
+
+    RISK_HIGH,
+
+    RISK_CRITICAL,
+
+]
+
+
+
+# ============================================================
+# Finding Status
+# ============================================================
+
+
+FINDING_OPEN = "open"
+
+
+FINDING_INVESTIGATING = "investigating"
+
+
+FINDING_MITIGATED = "mitigated"
+
+
+FINDING_RESOLVED = "resolved"
+
+
+FINDING_ACCEPTED = "accepted"
+
+
+
+# ============================================================
 # Scan Status
-# ============================================================================
+# ============================================================
 
 
-class ScanStatus(str, Enum):
-    """
-    Scan execution state.
-    """
+SCAN_PENDING = "pending"
 
-    PENDING = "pending"
 
-    RUNNING = "running"
+SCAN_RUNNING = "running"
 
-    COMPLETED = "completed"
 
-    FAILED = "failed"
+SCAN_COMPLETED = "completed"
 
-    PARTIAL = "partial"
 
-    CANCELLED = "cancelled"
+SCAN_FAILED = "failed"
 
 
-# ============================================================================
-# Finding Severity
-# ============================================================================
+SCAN_CANCELLED = "cancelled"
 
 
-class Severity(str, Enum):
-    """
-    Finding severity.
 
-    Numerical values are intentionally not stored here.
-    The scoring engine maps these to weights.
-    """
+# ============================================================
+# Job / Queue Status
+# ============================================================
 
-    CRITICAL = "critical"
 
-    HIGH = "high"
+JOB_PENDING = "pending"
 
-    MEDIUM = "medium"
 
-    LOW = "low"
+JOB_RUNNING = "running"
 
-    INFORMATIONAL = "informational"
 
+JOB_COMPLETED = "completed"
 
-# ============================================================================
-# Overall Risk
-# ============================================================================
 
+JOB_FAILED = "failed"
 
-class RiskLevel(str, Enum):
-    """
-    Overall organizational risk.
-    """
 
-    CRITICAL = "critical"
+JOB_CANCELLED = "cancelled"
 
-    HIGH = "high"
 
-    MEDIUM = "medium"
+JOB_RETRYING = "retrying"
 
-    LOW = "low"
 
-    MINIMAL = "minimal"
 
+# ============================================================
+# Backup Status
+# ============================================================
 
-# ============================================================================
-# Scanner Names
-# ============================================================================
 
-SCANNER_TLS = "tls"
+BACKUP_CREATED = "created"
 
-SCANNER_CERTIFICATE = "certificate"
 
-SCANNER_HTTP = "http"
+BACKUP_RUNNING = "running"
 
-SCANNER_DNS = "dns"
 
-SCANNER_EMAIL = "email"
+BACKUP_COMPLETED = "completed"
 
-SCANNER_PQC = "pqc"
 
-SCANNER_TECHNOLOGY = "technology"
+BACKUP_FAILED = "failed"
 
-SCANNER_CLOUD = "cloud"
 
-SCANNER_AI = "ai"
+BACKUP_RESTORED = "restored"
 
-ALL_SCANNERS = (
-    SCANNER_TLS,
-    SCANNER_CERTIFICATE,
-    SCANNER_HTTP,
-    SCANNER_DNS,
-    SCANNER_EMAIL,
-    SCANNER_PQC,
-    SCANNER_TECHNOLOGY,
-    SCANNER_CLOUD,
-)
 
 
-# ============================================================================
-# TLS
-# ============================================================================
-
-SUPPORTED_TLS = (
-    "TLSv1.3",
-)
-
-LEGACY_TLS = (
-    "TLSv1",
-    "TLSv1.1",
-    "TLSv1.2",
-)
-
-INSECURE_TLS = (
-    "SSLv2",
-    "SSLv3",
-)
-
-# Cipher keywords that should be considered legacy.
-WEAK_CIPHER_KEYWORDS = (
-    "RSA",
-    "3DES",
-    "DES",
-    "RC2",
-    "RC4",
-    "NULL",
-    "EXPORT",
-    "MD5",
-)
-
-
-# ============================================================================
-# HTTP Security Headers
-# ============================================================================
-
-RECOMMENDED_SECURITY_HEADERS = {
-    "strict-transport-security": "Enable HSTS with a long max-age.",
-    "content-security-policy": "Deploy a restrictive Content Security Policy.",
-    "x-content-type-options": "Set X-Content-Type-Options: nosniff.",
-    "x-frame-options": "Protect against clickjacking.",
-    "referrer-policy": "Control referrer leakage.",
-    "permissions-policy": "Restrict browser capabilities.",
-    "cross-origin-opener-policy": "Enable process isolation.",
-    "cross-origin-embedder-policy": "Protect embedded resources.",
-    "cross-origin-resource-policy": "Restrict cross-origin access.",
-}
-
-
-# ============================================================================
-# Secure Cookie Attributes
-# ============================================================================
-
-COOKIE_FLAGS = (
-    "Secure",
-    "HttpOnly",
-    "SameSite",
-)
-
-
-# ============================================================================
-# DNS
-# ============================================================================
-
-DNS_RECORD_TYPES = (
-    "A",
-    "AAAA",
-    "CAA",
-    "CNAME",
-    "MX",
-    "NS",
-    "SOA",
-    "TXT",
-)
-
-
-# ============================================================================
-# PQC Algorithms
-# ============================================================================
+# ============================================================
+# Cryptography Constants
+# ============================================================
 
-SUPPORTED_PQC_KEMS = (
-    "ML-KEM-512",
-    "ML-KEM-768",
-    "ML-KEM-1024",
-)
 
-SUPPORTED_PQC_SIGNATURES = (
-    "ML-DSA-44",
-    "ML-DSA-65",
-    "ML-DSA-87",
-    "SLH-DSA",
-)
+AES_256 = "AES-256"
 
 
-# ============================================================================
-# Classical Algorithms
-# ============================================================================
+AES_192 = "AES-192"
 
-CLASSICAL_KEY_EXCHANGE = (
-    "RSA",
-    "DH",
-    "ECDH",
-    "ECDHE",
-    "X25519",
-)
 
-CLASSICAL_SIGNATURES = (
-    "RSA",
-    "ECDSA",
-    "Ed25519",
-)
+AES_128 = "AES-128"
 
 
-# ============================================================================
-# Compliance Frameworks
-# ============================================================================
 
-COMPLIANCE = (
-    "OWASP ASVS",
-    "OWASP Top 10",
-    "NIST CSF",
-    "NIST PQC",
-    "PCI DSS",
-    "ISO 27001",
-    "CIS Controls",
-)
+HASH_SHA256 = "SHA-256"
 
 
-# ============================================================================
-# Scoring Categories
-# ============================================================================
+HASH_SHA512 = "SHA-512"
 
-CATEGORY_TLS = "tls"
 
-CATEGORY_CERTIFICATE = "certificate"
+HASH_BLAKE3 = "BLAKE3"
 
-CATEGORY_HTTP = "http"
 
-CATEGORY_DNS = "dns"
 
-CATEGORY_EMAIL = "email"
+# ============================================================
+# Post Quantum Cryptography
+# ============================================================
 
-CATEGORY_PQC = "pqc"
 
-CATEGORY_TECHNOLOGY = "technology"
+PQC_KYBER = "CRYSTALS-KYBER"
 
-CATEGORY_CLOUD = "cloud"
 
+PQC_DILITHIUM = "CRYSTALS-DILITHIUM"
 
-# ============================================================================
-# Score Weights
-# Total = 100
-# ============================================================================
 
-DEFAULT_SCORE_WEIGHTS = {
-    CATEGORY_TLS: 25,
-    CATEGORY_CERTIFICATE: 15,
-    CATEGORY_HTTP: 15,
-    CATEGORY_DNS: 15,
-    CATEGORY_EMAIL: 10,
-    CATEGORY_PQC: 20,
-}
+PQC_FALCON = "FALCON"
 
 
-# ============================================================================
-# Default Timeouts
-# ============================================================================
+PQC_SPHINCS = "SPHINCS+"
 
-NETWORK_TIMEOUT = 15
 
-DNS_TIMEOUT = 5
 
-TLS_TIMEOUT = 10
+PQC_KEM_ALGORITHMS = [
 
-HTTP_TIMEOUT = 15
+    PQC_KYBER,
 
+]
 
-# ============================================================================
+
+
+PQC_SIGNATURE_ALGORITHMS = [
+
+    PQC_DILITHIUM,
+
+    PQC_FALCON,
+
+    PQC_SPHINCS,
+
+]
+
+
+
+# ============================================================
+# Encryption Classification
+# ============================================================
+
+
+DATA_PUBLIC = "public"
+
+
+DATA_INTERNAL = "internal"
+
+
+DATA_CONFIDENTIAL = "confidential"
+
+
+DATA_RESTRICTED = "restricted"
+
+
+DATA_TOP_SECRET = "top_secret"
+
+
+
+# ============================================================
+# Event Types
+# ============================================================
+
+
+EVENT_USER_CREATED = "user.created"
+
+
+EVENT_USER_LOGIN = "user.login"
+
+
+EVENT_USER_LOGOUT = "user.logout"
+
+
+EVENT_PERMISSION_CHANGED = "permission.changed"
+
+
+EVENT_KEY_ROTATED = "key.rotated"
+
+
+EVENT_KEY_REVOKED = "key.revoked"
+
+
+EVENT_SECURITY_ALERT = "security.alert"
+
+
+EVENT_SCAN_COMPLETED = "scan.completed"
+
+
+EVENT_BACKUP_COMPLETED = "backup.completed"
+
+
+
+# ============================================================
+# Integration Types
+# ============================================================
+
+
+INTEGRATION_API = "api"
+
+
+INTEGRATION_WEBHOOK = "webhook"
+
+
+INTEGRATION_DATABASE = "database"
+
+
+INTEGRATION_STORAGE = "storage"
+
+
+INTEGRATION_IDENTITY = "identity"
+
+
+
+# ============================================================
 # Report Types
-# ============================================================================
+# ============================================================
+
+
+REPORT_SECURITY = "security"
+
+
+REPORT_COMPLIANCE = "compliance"
+
+
+REPORT_RISK = "risk"
+
+
+REPORT_AUDIT = "audit"
+
 
 REPORT_EXECUTIVE = "executive"
 
-REPORT_TECHNICAL = "technical"
-
-REPORT_JSON = "json"
-
-REPORT_CSV = "csv"
-
-REPORT_PDF = "pdf"
 
 
-# ============================================================================
-# Finding Types
-# ============================================================================
-
-FINDING_CONFIGURATION = "configuration"
-
-FINDING_CRYPTOGRAPHY = "cryptography"
-
-FINDING_CERTIFICATE = "certificate"
-
-FINDING_DNS = "dns"
-
-FINDING_HTTP = "http"
-
-FINDING_EMAIL = "email"
-
-FINDING_PQC = "post_quantum"
-
-FINDING_INFORMATION = "information"
+# ============================================================
+# Compliance Frameworks
+# ============================================================
 
 
-# ============================================================================
-# Default Recommendation
-# ============================================================================
+FRAMEWORK_ISO27001 = "ISO27001"
 
-DEFAULT_PQC_RECOMMENDATION = (
-    "Adopt hybrid cryptography using X25519 + ML-KEM-768 for key "
-    "establishment and ML-DSA-65 for digital signatures where supported."
-)
+
+FRAMEWORK_SOC2 = "SOC2"
+
+
+FRAMEWORK_NIST = "NIST"
+
+
+FRAMEWORK_GDPR = "GDPR"
+
+
+FRAMEWORK_PCI_DSS = "PCI_DSS"
+
+
+
+SUPPORTED_FRAMEWORKS = [
+
+    FRAMEWORK_ISO27001,
+
+    FRAMEWORK_SOC2,
+
+    FRAMEWORK_NIST,
+
+    FRAMEWORK_GDPR,
+
+    FRAMEWORK_PCI_DSS,
+
+]
+
+
+
+# ============================================================
+# Pagination Defaults
+# ============================================================
+
+
+DEFAULT_PAGE_SIZE = 20
+
+
+MAX_PAGE_SIZE = 100
+
+
+
+# ============================================================
+# Security Limits
+# ============================================================
+
+
+MAX_LOGIN_ATTEMPTS = 5
+
+
+PASSWORD_EXPIRY_DAYS = 90
+
+
+API_KEY_EXPIRY_DAYS = 365
+
+
+
+# ============================================================
+# Time Constants
+# ============================================================
+
+
+SECONDS_PER_MINUTE = 60
+
+
+SECONDS_PER_HOUR = 3600
+
+
+SECONDS_PER_DAY = 86400
+
+
+
+# ============================================================
+# File Storage
+# ============================================================
+
+
+MAX_FILE_SIZE_MB = 100
+
+
+ALLOWED_REPORT_FORMATS = [
+
+    "pdf",
+
+    "csv",
+
+    "json",
+
+    "html",
+
+]
+
+
+
+# ============================================================
+# Default Messages
+# ============================================================
+
+
+SYSTEM_HEALTHY = "healthy"
+
+
+SYSTEM_DEGRADED = "degraded"
+
+
+SYSTEM_UNAVAILABLE = "unavailable"

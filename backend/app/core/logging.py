@@ -2,164 +2,461 @@
 QShield Enterprise
 ==================
 
-Central logging configuration.
+Logging Infrastructure.
 
-All modules should use:
+Responsibilities:
 
-    from app.core.logging import get_logger
+- Application logging configuration
+- Structured logging
+- Security event logging
+- Audit compatible logs
+- Request correlation support
+- Production log formatting
 
-    logger = get_logger(__name__)
-
-Do NOT use print() anywhere in the application.
-
-The logger writes to both:
-
-- Console
-- Rotating log file
-
-This file should contain NO business logic.
 """
 
 from __future__ import annotations
 
+
+import json
+
+
 import logging
+
+
 import sys
-from logging.handlers import RotatingFileHandler
-from pathlib import Path
-
-from app.core.settings import settings
-
-# ---------------------------------------------------------------------
-# Internal State
-# ---------------------------------------------------------------------
-
-_LOGGING_INITIALIZED = False
 
 
-class ColoredFormatter(logging.Formatter):
+from datetime import datetime, timezone
+
+
+from typing import Any
+
+
+
+from app.core.config import settings
+
+
+
+# ============================================================
+# Custom JSON Formatter
+# ============================================================
+
+
+class JSONFormatter(
+    logging.Formatter
+):
     """
-    Colored console formatter for development.
+    JSON structured log formatter.
 
-    File logging remains plain text.
-    """
+    Designed for:
 
-    RESET = "\033[0m"
-
-    COLORS = {
-        logging.DEBUG: "\033[36m",      # Cyan
-        logging.INFO: "\033[32m",       # Green
-        logging.WARNING: "\033[33m",    # Yellow
-        logging.ERROR: "\033[31m",      # Red
-        logging.CRITICAL: "\033[41m",   # Red Background
-    }
-
-    def format(self, record: logging.LogRecord) -> str:
-        color = self.COLORS.get(record.levelno, self.RESET)
-
-        formatted = super().format(record)
-
-        return f"{color}{formatted}{self.RESET}"
-
-
-def _build_console_handler() -> logging.Handler:
-    """
-    Creates the console logger.
+    - SIEM systems
+    - Log aggregation
+    - Security monitoring
     """
 
-    handler = logging.StreamHandler(sys.stdout)
+    def format(
+        self,
+        record: logging.LogRecord
+    ) -> str:
 
-    handler.setFormatter(
-        ColoredFormatter(
-            fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-            datefmt="%H:%M:%S",
+        payload = {
+
+            "timestamp":
+
+                datetime.now(
+                    timezone.utc
+                ).isoformat(),
+
+
+            "level":
+
+                record.levelname,
+
+
+            "logger":
+
+                record.name,
+
+
+            "message":
+
+                record.getMessage(),
+
+
+            "application":
+
+                settings.APP_NAME,
+
+
+            "environment":
+
+                settings.ENVIRONMENT,
+
+        }
+
+
+
+        if hasattr(
+            record,
+            "request_id"
+        ):
+
+            payload["request_id"] = (
+
+                record.request_id
+
+            )
+
+
+
+        if hasattr(
+            record,
+            "user_id"
+        ):
+
+            payload["user_id"] = (
+
+                record.user_id
+
+            )
+
+
+
+        if record.exc_info:
+
+            payload["exception"] = (
+
+                self.formatException(
+
+                    record.exc_info
+
+                )
+
+            )
+
+
+
+        return json.dumps(
+
+            payload
+
         )
-    )
-
-    return handler
 
 
-def _build_file_handler() -> logging.Handler:
+
+# ============================================================
+# Logger Configuration
+# ============================================================
+
+
+def configure_logging():
     """
-    Creates the rotating file logger.
+    Configure application logging.
+
+    Called during application startup.
     """
-
-    log_path: Path = settings.log_file
-
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-
-    handler = RotatingFileHandler(
-        filename=log_path,
-        maxBytes=10 * 1024 * 1024,   # 10 MB
-        backupCount=10,
-        encoding="utf-8",
-    )
-
-    handler.setFormatter(
-        logging.Formatter(
-            fmt=(
-                "%(asctime)s | "
-                "%(levelname)s | "
-                "%(name)s | "
-                "%(filename)s:%(lineno)d | "
-                "%(message)s"
-            ),
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-    )
-
-    return handler
-
-
-def configure_logging() -> None:
-    """
-    Configures application logging.
-
-    Safe to call multiple times.
-    """
-
-    global _LOGGING_INITIALIZED
-
-    if _LOGGING_INITIALIZED:
-        return
 
     root_logger = logging.getLogger()
 
-    root_logger.setLevel(settings.log_level.upper())
 
-    # Prevent duplicate handlers if uvicorn reloads
+    root_logger.setLevel(
+
+        settings.LOG_LEVEL.upper()
+
+    )
+
+
+
     root_logger.handlers.clear()
 
-    root_logger.addHandler(_build_console_handler())
-    root_logger.addHandler(_build_file_handler())
-
-    # Reduce noisy third-party loggers
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("httpcore").setLevel(logging.WARNING)
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
-    logging.getLogger("asyncio").setLevel(logging.WARNING)
-    logging.getLogger("uvicorn.access").setLevel(logging.INFO)
-
-    _LOGGING_INITIALIZED = True
-
-    logger = logging.getLogger("qshield")
-
-    logger.info("=" * 70)
-    logger.info("%s %s", settings.app_name, settings.app_version)
-    logger.info("Logging initialized")
-    logger.info("Log file : %s", settings.log_file)
-    logger.info("Log level: %s", settings.log_level)
-    logger.info("=" * 70)
 
 
-def get_logger(name: str) -> logging.Logger:
+    handler = logging.StreamHandler(
+
+        sys.stdout
+
+    )
+
+
+
+    if settings.LOG_FORMAT == "json":
+
+        handler.setFormatter(
+
+            JSONFormatter()
+
+        )
+
+
+    else:
+
+        handler.setFormatter(
+
+            logging.Formatter(
+
+                "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+
+            )
+
+        )
+
+
+
+    root_logger.addHandler(
+
+        handler
+
+    )
+
+
+
+    logging.getLogger(
+
+        "uvicorn"
+
+    ).handlers = root_logger.handlers
+
+
+
+    logging.getLogger(
+
+        "sqlalchemy"
+
+    ).setLevel(
+
+        logging.WARNING
+
+    )
+
+
+
+    return root_logger
+
+
+
+# ============================================================
+# Application Logger
+# ============================================================
+
+
+def get_logger(
+    name: str
+) -> logging.Logger:
     """
-    Returns a configured logger.
+    Retrieve application logger.
 
-    Example
-    -------
+    Usage:
+
         logger = get_logger(__name__)
+
     """
 
-    configure_logging()
+    return logging.getLogger(
 
-    return logging.getLogger(name)
+        name
+
+    )
+
+
+
+# ============================================================
+# Security Logging
+# ============================================================
+
+
+class SecurityLogger:
+    """
+    Security event logger.
+
+    Used for:
+
+    - Authentication events
+    - Permission changes
+    - Key operations
+    - Threat events
+
+    """
+
+    def __init__(
+        self
+    ):
+
+        self.logger = logging.getLogger(
+
+            "security"
+
+        )
+
+
+
+    def log_event(
+        self,
+        event: str,
+        details: dict[str, Any],
+    ):
+        """
+        Record security event.
+        """
+
+        self.logger.info(
+
+            event,
+
+            extra={
+
+                "security_event":
+
+                    True,
+
+
+                "details":
+
+                    details,
+
+            },
+
+        )
+
+
+
+    def log_warning(
+        self,
+        event: str,
+        details: dict[str, Any],
+    ):
+        """
+        Record security warning.
+        """
+
+        self.logger.warning(
+
+            event,
+
+            extra={
+
+                "security_event":
+
+                    True,
+
+
+                "details":
+
+                    details,
+
+            },
+
+        )
+
+
+
+    def log_failure(
+        self,
+        event: str,
+        details: dict[str, Any],
+    ):
+        """
+        Record security failure.
+        """
+
+        self.logger.error(
+
+            event,
+
+            extra={
+
+                "security_event":
+
+                    True,
+
+
+                "details":
+
+                    details,
+
+            },
+
+        )
+
+
+
+# ============================================================
+# Audit Logger
+# ============================================================
+
+
+class AuditLogger:
+    """
+    Enterprise audit logger.
+
+    Tracks:
+
+    - User actions
+    - Data access
+    - Configuration changes
+    """
+
+    def __init__(
+        self
+    ):
+
+        self.logger = logging.getLogger(
+
+            "audit"
+
+        )
+
+
+
+    def record(
+        self,
+        action: str,
+        actor: str | None = None,
+        resource: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ):
+        """
+        Record audit event.
+        """
+
+        self.logger.info(
+
+            action,
+
+            extra={
+
+                "audit_event":
+
+                    True,
+
+
+                "actor":
+
+                    actor,
+
+
+                "resource":
+
+                    resource,
+
+
+                "metadata":
+
+                    metadata or {},
+
+            },
+
+        )
+
+
+
+# ============================================================
+# Default Instances
+# ============================================================
+
+
+security_logger = SecurityLogger()
+
+
+audit_logger = AuditLogger()
