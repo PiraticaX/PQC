@@ -42,7 +42,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.policy import Policy
@@ -131,7 +131,7 @@ class PolicyService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -190,7 +190,7 @@ class PolicyService:
         Retrieve policy.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Policy)
             .where(
@@ -216,7 +216,7 @@ class PolicyService:
         Retrieve policy by name.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Policy)
             .where(
@@ -271,7 +271,7 @@ class PolicyService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -290,7 +290,7 @@ class PolicyService:
         Check policy existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -364,10 +364,10 @@ class PolicyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             policy
         )
 
@@ -425,7 +425,7 @@ class PolicyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -477,7 +477,7 @@ class PolicyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -529,7 +529,7 @@ class PolicyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

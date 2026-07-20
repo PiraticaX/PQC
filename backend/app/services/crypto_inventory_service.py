@@ -43,7 +43,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -73,7 +73,7 @@ class CryptoInventoryService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -292,7 +292,7 @@ class CryptoInventoryService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -309,7 +309,7 @@ class CryptoInventoryService:
         Check asset existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Asset.id,
@@ -484,12 +484,12 @@ class CryptoInventoryService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -507,7 +507,7 @@ class CryptoInventoryService:
         Rollback transaction.
         """
 
-        await self.db.rollback()
+        self.db.rollback()
             # ============================================================
     # Certificate Inventory Engine
     # ============================================================

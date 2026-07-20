@@ -43,7 +43,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.session import Session
@@ -124,7 +124,7 @@ class SessionService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -196,7 +196,7 @@ class SessionService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -227,7 +227,7 @@ class SessionService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -266,7 +266,7 @@ class SessionService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -285,7 +285,7 @@ class SessionService:
         Check session existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -403,7 +403,7 @@ class SessionService:
         Count active user sessions.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -584,10 +584,10 @@ class SessionService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             session,
         )
 
@@ -923,7 +923,7 @@ class SessionService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -980,7 +980,7 @@ class SessionService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1684,7 +1684,7 @@ class SessionService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1789,7 +1789,7 @@ class SessionService:
 
 
 
-            await self.db.commit()
+            self.db.commit()
 
 
 
@@ -1855,7 +1855,7 @@ class SessionService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1956,7 +1956,7 @@ class SessionService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -2875,7 +2875,7 @@ class SessionService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -3857,7 +3857,7 @@ class SessionService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -4283,7 +4283,7 @@ class SessionService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

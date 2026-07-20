@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -128,7 +128,7 @@ class PQCKeyProfileRequest(
 )
 async def create_key(
     request: KeyCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -182,7 +182,7 @@ async def create_key(
 async def list_keys(
     key_type: str | None = None,
     key_status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -210,7 +210,7 @@ async def list_keys(
 )
 async def get_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -255,7 +255,7 @@ async def get_key(
 )
 async def rotate_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -282,7 +282,7 @@ async def rotate_key(
 async def revoke_key(
     key_id: UUID,
     request: KeyRevokeRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -310,7 +310,7 @@ async def revoke_key(
 )
 async def destroy_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -341,7 +341,7 @@ async def destroy_key(
 )
 async def validate_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -368,7 +368,7 @@ async def validate_key(
 async def record_key_usage(
     key_id: UUID,
     operation: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -401,7 +401,7 @@ async def record_key_usage(
 )
 async def create_pqc_profile(
     request: PQCKeyProfileRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -437,7 +437,7 @@ async def create_pqc_profile(
     "/inventory",
 )
 async def key_inventory(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -458,7 +458,7 @@ async def key_inventory(
     "/statistics",
 )
 async def key_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

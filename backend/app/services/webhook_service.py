@@ -45,7 +45,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.webhook import Webhook
@@ -138,7 +138,7 @@ class WebhookService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -193,7 +193,7 @@ class WebhookService:
         Retrieve webhook.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Webhook)
             .where(
@@ -219,7 +219,7 @@ class WebhookService:
         Retrieve organization webhooks.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Webhook)
             .where(
@@ -247,7 +247,7 @@ class WebhookService:
         Count organization webhooks.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -313,10 +313,10 @@ class WebhookService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             webhook
         )
 
@@ -381,7 +381,7 @@ class WebhookService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -433,7 +433,7 @@ class WebhookService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -480,12 +480,12 @@ class WebhookService:
 
 
 
-        await self.db.delete(
+        self.db.delete(
             webhook
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

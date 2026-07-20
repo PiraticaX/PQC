@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -144,7 +144,7 @@ class RemediationRequest(
 )
 async def create_finding(
     request: FindingCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -195,7 +195,7 @@ async def create_finding(
 async def list_findings(
     severity: str | None = None,
     status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -223,7 +223,7 @@ async def list_findings(
 )
 async def get_finding(
     finding_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -263,7 +263,7 @@ async def get_finding(
 )
 async def delete_finding(
     finding_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -295,7 +295,7 @@ async def delete_finding(
 async def update_finding_status(
     finding_id: UUID,
     request: FindingStatusRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -334,7 +334,7 @@ async def update_finding_status(
 async def resolve_finding(
     finding_id: UUID,
     request: RemediationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -370,7 +370,7 @@ async def resolve_finding(
 async def assign_finding(
     finding_id: UUID,
     request: FindingAssignmentRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -398,7 +398,7 @@ async def assign_finding(
 )
 async def finding_history(
     finding_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -429,7 +429,7 @@ async def finding_history(
 )
 async def finding_risk(
     finding_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -459,7 +459,7 @@ async def finding_risk(
     "/statistics",
 )
 async def finding_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

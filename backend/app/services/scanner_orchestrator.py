@@ -49,7 +49,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -106,7 +106,7 @@ class ScannerOrchestrator:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -208,7 +208,7 @@ class ScannerOrchestrator:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -237,7 +237,7 @@ class ScannerOrchestrator:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -254,7 +254,7 @@ class ScannerOrchestrator:
         Verify scan exists.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Scan.id,
@@ -278,7 +278,7 @@ class ScannerOrchestrator:
         Verify asset exists.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Asset.id,
@@ -307,12 +307,12 @@ class ScannerOrchestrator:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -330,7 +330,7 @@ class ScannerOrchestrator:
         Rollback database transaction.
         """
 
-        await self.db.rollback()
+        self.db.rollback()
 
 
 
@@ -490,7 +490,7 @@ class ScannerOrchestrator:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -572,7 +572,7 @@ class ScannerOrchestrator:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -657,7 +657,7 @@ class ScannerOrchestrator:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -699,7 +699,7 @@ class ScannerOrchestrator:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -953,7 +953,7 @@ class ScannerOrchestrator:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -2421,7 +2421,7 @@ class ScannerOrchestrator:
 
             for finding in created:
 
-                await self.db.refresh(
+                self.db.refresh(
                     finding,
                 )
 
@@ -2718,7 +2718,7 @@ class ScannerOrchestrator:
 
             for finding in created:
 
-                await self.db.refresh(
+                self.db.refresh(
                     finding,
                 )
 

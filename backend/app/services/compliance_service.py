@@ -48,7 +48,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -84,7 +84,7 @@ class ComplianceService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -330,7 +330,7 @@ class ComplianceService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -347,7 +347,7 @@ class ComplianceService:
         Check if asset exists.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Asset.id,
@@ -395,7 +395,7 @@ class ComplianceService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 

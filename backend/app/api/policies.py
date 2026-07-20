@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -146,7 +146,7 @@ class PolicyEvaluationRequest(
 )
 async def create_policy(
     request: PolicyCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -199,7 +199,7 @@ async def create_policy(
     "",
 )
 async def list_policies(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -221,7 +221,7 @@ async def list_policies(
 )
 async def get_policy(
     policy_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -262,7 +262,7 @@ async def get_policy(
 async def update_policy(
     policy_id: UUID,
     request: PolicyUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -294,7 +294,7 @@ async def update_policy(
 )
 async def delete_policy(
     policy_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -325,7 +325,7 @@ async def delete_policy(
 )
 async def evaluate_policy(
     request: PolicyEvaluationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -368,7 +368,7 @@ async def evaluate_policy(
 )
 async def check_access(
     request: PolicyEvaluationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -403,7 +403,7 @@ async def check_access(
 )
 async def get_policy_rules(
     policy_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -429,7 +429,7 @@ async def get_policy_rules(
 )
 async def activate_policy(
     policy_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -455,7 +455,7 @@ async def activate_policy(
 )
 async def disable_policy(
     policy_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -485,7 +485,7 @@ async def disable_policy(
     "/statistics/summary",
 )
 async def policy_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

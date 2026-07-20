@@ -40,7 +40,7 @@ from fastapi import Depends
 from fastapi import HTTPException
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -76,7 +76,7 @@ router = APIRouter(
     "",
 )
 async def list_sessions(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -98,7 +98,7 @@ async def list_sessions(
 )
 async def get_session(
     session_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -138,7 +138,7 @@ async def get_session(
 )
 async def user_sessions(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -169,7 +169,7 @@ async def user_sessions(
 )
 async def revoke_session(
     session_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -195,7 +195,7 @@ async def revoke_session(
 )
 async def terminate_session(
     session_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -226,7 +226,7 @@ async def terminate_session(
 )
 async def session_activity(
     session_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -259,7 +259,7 @@ async def session_activity(
 )
 async def terminate_all_user_sessions(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -296,7 +296,7 @@ async def terminate_all_user_sessions(
     "/statistics/summary",
 )
 async def session_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -317,7 +317,7 @@ async def session_statistics(
     "/security/risk",
 )
 async def session_security_risk(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

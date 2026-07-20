@@ -41,7 +41,7 @@ from fastapi import Security
 from fastapi.security import OAuth2PasswordBearer
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 
@@ -80,7 +80,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 DatabaseSession = Annotated[
 
-    AsyncSession,
+    Session,
 
     Depends(get_db)
 

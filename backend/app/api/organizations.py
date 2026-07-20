@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -136,7 +136,7 @@ class AddMemberRequest(
 )
 async def create_organization(
     request: OrganizationCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -183,7 +183,7 @@ async def create_organization(
     "",
 )
 async def list_organizations(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -205,7 +205,7 @@ async def list_organizations(
 )
 async def get_organization(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -246,7 +246,7 @@ async def get_organization(
 async def update_organization(
     organization_id: UUID,
     request: OrganizationUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -281,7 +281,7 @@ async def update_organization(
 )
 async def delete_organization(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -312,7 +312,7 @@ async def delete_organization(
 )
 async def organization_users(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -339,7 +339,7 @@ async def organization_users(
 async def add_member(
     organization_id: UUID,
     request: AddMemberRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -370,7 +370,7 @@ async def add_member(
 async def remove_member(
     organization_id: UUID,
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -403,7 +403,7 @@ async def remove_member(
 )
 async def organization_permissions(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -434,7 +434,7 @@ async def organization_permissions(
 )
 async def organization_statistics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -460,7 +460,7 @@ async def organization_statistics(
 )
 async def activate_organization(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -486,7 +486,7 @@ async def activate_organization(
 )
 async def deactivate_organization(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

@@ -19,7 +19,8 @@ import logging
 
 import app.models  # noqa: F401
 
-from app.database.session import Base, create_database
+from app.database.database import engine
+from app.database.session import Base
 from app.database.seed import initialize_database
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ def create_schema() -> None:
     logger.info("Creating database schema...")
     logger.info("=" * 70)
 
-    create_database()
+    Base.metadata.create_all(bind=engine)
 
     logger.info(
         "Database schema ready (%d tables).",

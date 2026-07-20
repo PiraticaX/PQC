@@ -52,7 +52,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -178,7 +178,7 @@ class AuditService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -320,7 +320,7 @@ class AuditService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -337,7 +337,7 @@ class AuditService:
         Verify asset existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -467,7 +467,7 @@ class AuditService:
         - Reports
         """
 
-        asset_count = await self.db.scalar(
+        asset_count = self.db.scalar(
 
             select(
                 func.count(
@@ -888,7 +888,7 @@ class AuditService:
         # Future:
         #
         # self.db.add(AuditEvent(**enriched))
-        # await self.db.commit()
+        # self.db.commit()
         #
 
 

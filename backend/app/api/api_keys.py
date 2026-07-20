@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -128,7 +128,7 @@ class APIKeyScopeUpdateRequest(
 async def create_api_key(
     user_id: UUID,
     request: APIKeyCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -187,7 +187,7 @@ async def create_api_key(
 )
 async def list_api_keys(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -213,7 +213,7 @@ async def list_api_keys(
 )
 async def get_api_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -254,7 +254,7 @@ async def get_api_key(
 async def revoke_api_key(
     key_id: UUID,
     request: APIKeyRevokeRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -287,7 +287,7 @@ async def revoke_api_key(
 )
 async def rotate_api_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -320,7 +320,7 @@ async def rotate_api_key(
 )
 async def suspend_api_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -346,7 +346,7 @@ async def suspend_api_key(
 )
 async def activate_api_key(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -382,7 +382,7 @@ async def activate_api_key(
 async def update_scopes(
     key_id: UUID,
     request: APIKeyScopeUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -415,7 +415,7 @@ async def update_scopes(
 )
 async def validate_api_key(
     api_key: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -453,7 +453,7 @@ async def validate_api_key(
 )
 async def api_key_usage(
     key_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -478,7 +478,7 @@ async def api_key_usage(
     "/statistics/summary",
 )
 async def api_key_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

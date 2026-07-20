@@ -43,7 +43,7 @@ from uuid import UUID
 
 from sqlalchemy import func
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.report import Report
 from app.models.report import ReportFormat
@@ -73,7 +73,7 @@ class ReportService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -179,7 +179,7 @@ class ReportService:
                 Report.status != ReportStatus.EXPIRED,
             )
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -209,7 +209,7 @@ class ReportService:
             )
         )
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -235,7 +235,7 @@ class ReportService:
             )
         )
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -258,7 +258,7 @@ class ReportService:
             )
         )
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -273,10 +273,10 @@ class ReportService:
         """
 
         try:
-            await self.db.commit()
+            self.db.commit()
 
         except Exception:
-            await self.db.rollback()
+            self.db.rollback()
 
             logger.exception(
                 "Database commit failed."
@@ -506,7 +506,7 @@ class ReportService:
 
             await self.commit()
 
-            await self.db.refresh(
+            self.db.refresh(
                 report,
             )
 
@@ -580,7 +580,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             duplicate,
         )
 
@@ -660,7 +660,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -697,7 +697,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -742,7 +742,7 @@ class ReportService:
             )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -813,7 +813,7 @@ class ReportService:
         )
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             count_stmt,
         )
 
@@ -866,7 +866,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -925,7 +925,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -977,7 +977,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1062,7 +1062,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1112,7 +1112,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1184,7 +1184,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1230,7 +1230,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1316,7 +1316,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1348,7 +1348,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1579,7 +1579,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -1791,13 +1791,13 @@ class ReportService:
         - Reports by type
         """
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             select(func.count())
             .select_from(Report)
         )
 
 
-        completed = await self.db.scalar(
+        completed = self.db.scalar(
             select(func.count())
             .select_from(Report)
             .where(
@@ -1807,7 +1807,7 @@ class ReportService:
         )
 
 
-        failed = await self.db.scalar(
+        failed = self.db.scalar(
             select(func.count())
             .select_from(Report)
             .where(
@@ -1817,7 +1817,7 @@ class ReportService:
         )
 
 
-        pending = await self.db.scalar(
+        pending = self.db.scalar(
             select(func.count())
             .select_from(Report)
             .where(
@@ -1827,7 +1827,7 @@ class ReportService:
         )
 
 
-        expired = await self.db.scalar(
+        expired = self.db.scalar(
             select(func.count())
             .select_from(Report)
             .where(
@@ -1842,7 +1842,7 @@ class ReportService:
         # --------------------------------------------------------
 
         format_rows = (
-            await self.db.execute(
+            self.db.execute(
                 select(
                     Report.report_format,
                     func.count(Report.id),
@@ -1870,7 +1870,7 @@ class ReportService:
         # --------------------------------------------------------
 
         type_rows = (
-            await self.db.execute(
+            self.db.execute(
                 select(
                     Report.report_type,
                     func.count(Report.id),
@@ -1937,7 +1937,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1974,7 +1974,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2014,7 +2014,7 @@ class ReportService:
 
         try:
 
-            await self.db.delete(
+            self.db.delete(
                 report,
             )
 
@@ -2072,7 +2072,7 @@ class ReportService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2084,7 +2084,7 @@ class ReportService:
 
         for report in reports:
 
-            await self.db.delete(
+            self.db.delete(
                 report,
             )
 
@@ -2142,7 +2142,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             report,
         )
 
@@ -2202,7 +2202,7 @@ class ReportService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             clone,
         )
 

@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -132,7 +132,7 @@ class WebhookTestRequest(
 async def create_webhook(
     organization_id: UUID,
     request: WebhookCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -183,7 +183,7 @@ async def create_webhook(
 )
 async def list_webhooks(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -209,7 +209,7 @@ async def list_webhooks(
 )
 async def get_webhook(
     webhook_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -250,7 +250,7 @@ async def get_webhook(
 async def update_webhook(
     webhook_id: UUID,
     request: WebhookUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -282,7 +282,7 @@ async def update_webhook(
 )
 async def delete_webhook(
     webhook_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -314,7 +314,7 @@ async def delete_webhook(
 async def test_webhook(
     webhook_id: UUID,
     request: WebhookTestRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -351,7 +351,7 @@ async def test_webhook(
 async def retry_webhook_delivery(
     webhook_id: UUID,
     event_id: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -384,7 +384,7 @@ async def retry_webhook_delivery(
 )
 async def webhook_history(
     webhook_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -417,7 +417,7 @@ async def validate_signature(
     payload: dict[str, Any],
     signature: str,
     secret: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -461,7 +461,7 @@ async def validate_signature(
 )
 async def webhook_statistics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

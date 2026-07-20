@@ -37,7 +37,7 @@ from fastapi import Depends
 from fastapi import status
 
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -165,7 +165,7 @@ async def liveness_check():
     "/ready",
 )
 async def readiness_check(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -181,7 +181,7 @@ async def readiness_check(
 
     try:
 
-        await db.execute(
+        db.execute(
             text("SELECT 1")
         )
 
@@ -246,7 +246,7 @@ async def readiness_check(
     "/services",
 )
 async def service_health(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

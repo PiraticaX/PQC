@@ -71,7 +71,7 @@ async def lifespan(app: FastAPI):
 
         logger.info("Bootstrapping database...")
 
-        await startup_database()
+        startup_database()
 
         logger.info("Database ready.")
 
@@ -109,7 +109,7 @@ async def lifespan(app: FastAPI):
             logger.exception("Failed to shutdown cache.")
 
         try:
-            await close_database()
+            close_database()
         except Exception:
             logger.exception("Failed to shutdown database.")
 

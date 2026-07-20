@@ -41,7 +41,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -83,7 +83,7 @@ class RiskService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -177,7 +177,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -204,7 +204,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -239,7 +239,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -273,7 +273,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -306,7 +306,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -326,12 +326,12 @@ class RiskService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -647,7 +647,7 @@ class RiskService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -717,7 +717,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -869,7 +869,7 @@ class RiskService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             asset,
         )
 
@@ -1212,7 +1212,7 @@ class RiskService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2735,7 +2735,7 @@ class RiskService:
 
         try:
 
-            result = await self.db.execute(
+            result = self.db.execute(
                 select(
                     func.count(
                         Asset.id,

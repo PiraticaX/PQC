@@ -8,7 +8,7 @@ Seeds the default QShield organization.
 
 Features
 --------
-- Async SQLAlchemy
+- Synchronous SQLAlchemy
 - Idempotent
 - Safe to run multiple times
 - Returns Organization instance
@@ -19,7 +19,7 @@ from __future__ import annotations
 import logging
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.organization import (
     Organization,
@@ -52,8 +52,8 @@ DEFAULT_ORGANIZATION = {
 }
 
 
-async def seed_organization(
-    db: AsyncSession,
+def seed_organization(
+    db: Session,
 ) -> Organization:
     """
     Seed the default organization.
@@ -66,7 +66,7 @@ async def seed_organization(
         Existing or newly created organization.
     """
 
-    result = await db.execute(
+    result = db.execute(
         select(Organization).where(
             Organization.primary_domain
             == DEFAULT_ORGANIZATION["primary_domain"]
@@ -87,10 +87,8 @@ async def seed_organization(
     )
 
     db.add(organization)
-
-    await db.commit()
-
-    await db.refresh(organization)
+    db.flush()
+    db.refresh(organization)
 
     logger.info(
         "Created default organization '%s'",

@@ -43,7 +43,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.analytics import AnalyticsEvent
@@ -134,7 +134,7 @@ class AnalyticsService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -215,7 +215,7 @@ class AnalyticsService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
         return {
@@ -270,7 +270,7 @@ class AnalyticsService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 

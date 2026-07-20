@@ -47,7 +47,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -137,7 +137,7 @@ class AssetScanRequest(
 )
 async def create_asset(
     request: AssetCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -194,7 +194,7 @@ async def create_asset(
 async def list_assets(
     asset_type: str | None = None,
     asset_status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -222,7 +222,7 @@ async def list_assets(
 )
 async def get_asset(
     asset_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -263,7 +263,7 @@ async def get_asset(
 async def update_asset(
     asset_id: UUID,
     request: AssetUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -295,7 +295,7 @@ async def update_asset(
 )
 async def delete_asset(
     asset_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -327,7 +327,7 @@ async def delete_asset(
 async def scan_asset(
     asset_id: UUID,
     request: AssetScanRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -356,7 +356,7 @@ async def scan_asset(
 )
 async def asset_findings(
     asset_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -382,7 +382,7 @@ async def asset_findings(
 )
 async def asset_history(
     asset_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -413,7 +413,7 @@ async def asset_history(
 )
 async def discover_assets(
     network: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -439,7 +439,7 @@ async def discover_assets(
     "/sync",
 )
 async def sync_assets(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -465,7 +465,7 @@ async def sync_assets(
     "/statistics",
 )
 async def asset_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

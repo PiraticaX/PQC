@@ -42,7 +42,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.user import User
@@ -105,7 +105,7 @@ class UserService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -202,7 +202,7 @@ class UserService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -231,7 +231,7 @@ class UserService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -248,7 +248,7 @@ class UserService:
         Check user existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -293,7 +293,7 @@ class UserService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -330,7 +330,7 @@ class UserService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -492,7 +492,7 @@ class UserService:
         Count organization users.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -669,7 +669,7 @@ class UserService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -749,7 +749,7 @@ class UserService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1084,10 +1084,10 @@ class UserService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             user,
         )
 
@@ -1495,10 +1495,10 @@ class UserService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             user,
         )
 
@@ -1825,7 +1825,7 @@ class UserService:
         user.role = role
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1898,7 +1898,7 @@ class UserService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -2245,7 +2245,7 @@ class UserService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -2308,7 +2308,7 @@ class UserService:
         user.organization_id = None
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

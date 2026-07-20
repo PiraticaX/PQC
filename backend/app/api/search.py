@@ -45,7 +45,7 @@ from fastapi import Depends
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -119,7 +119,7 @@ class AdvancedSearchRequest(
 )
 async def global_search(
     request: SearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -162,7 +162,7 @@ async def search_get(
     query: str,
     category: str | None = None,
     limit: int = 20,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -197,7 +197,7 @@ async def search_get(
 )
 async def search_assets(
     request: SearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -225,7 +225,7 @@ async def search_assets(
 )
 async def search_findings(
     request: SearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -253,7 +253,7 @@ async def search_findings(
 )
 async def search_users(
     request: SearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -279,7 +279,7 @@ async def search_users(
 )
 async def search_events(
     request: SearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -312,7 +312,7 @@ async def search_events(
 )
 async def advanced_search(
     request: AdvancedSearchRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -347,7 +347,7 @@ async def advanced_search(
 )
 async def autocomplete(
     query: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -373,7 +373,7 @@ async def autocomplete(
 )
 async def recent_searches(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -403,7 +403,7 @@ async def recent_searches(
     "/statistics",
 )
 async def search_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

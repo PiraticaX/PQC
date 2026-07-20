@@ -8,8 +8,18 @@ from app.database.database import engine
 from app.database.session import (
     SessionLocal,
     get_db,
-    check_database_connection,
 )
+
+
+def check_database_connection() -> bool:
+    """Verify that the synchronous database engine can execute a query."""
+    try:
+        with engine.connect() as connection:
+            connection.exec_driver_sql("SELECT 1")
+        return True
+    except Exception:
+        return False
+
 
 def close_database() -> None:
     """Dispose database connections."""

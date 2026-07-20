@@ -48,7 +48,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -121,7 +121,7 @@ class StorageRetentionRequest(
 )
 async def create_object(
     request: StorageObjectCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -157,7 +157,7 @@ async def create_object(
 async def list_objects(
     organization_id: UUID,
     storage_type: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -187,7 +187,7 @@ async def list_objects(
 )
 async def get_object(
     object_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -227,7 +227,7 @@ async def get_object(
 )
 async def delete_object(
     object_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -259,7 +259,7 @@ async def delete_object(
 async def upload_file(
     object_id: UUID,
     file: UploadFile = File(...),
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -298,7 +298,7 @@ async def upload_file(
 )
 async def download_object(
     object_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -332,7 +332,7 @@ async def store_report(
     organization_id: UUID,
     report_type: str,
     content: bytes,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -365,7 +365,7 @@ async def store_report(
 )
 async def archive_object(
     object_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -396,7 +396,7 @@ async def archive_object(
 )
 async def apply_retention(
     request: StorageRetentionRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -431,7 +431,7 @@ async def apply_retention(
 )
 async def storage_statistics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

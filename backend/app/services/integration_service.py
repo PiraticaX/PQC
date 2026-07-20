@@ -42,7 +42,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.integration import Integration
@@ -138,7 +138,7 @@ class IntegrationService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -197,7 +197,7 @@ class IntegrationService:
         Retrieve integration.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Integration)
             .where(
@@ -223,7 +223,7 @@ class IntegrationService:
         Retrieve organization integrations.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Integration)
             .where(
@@ -252,7 +252,7 @@ class IntegrationService:
         Check integration existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -333,10 +333,10 @@ class IntegrationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             integration
         )
 
@@ -406,7 +406,7 @@ class IntegrationService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -458,7 +458,7 @@ class IntegrationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -505,12 +505,12 @@ class IntegrationService:
 
 
 
-        await self.db.delete(
+        self.db.delete(
             integration
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

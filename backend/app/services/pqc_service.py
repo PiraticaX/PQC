@@ -48,7 +48,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -85,7 +85,7 @@ class PQCService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -295,7 +295,7 @@ class PQCService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -328,7 +328,7 @@ class PQCService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -347,7 +347,7 @@ class PQCService:
         Check asset availability.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Asset.id,
@@ -499,12 +499,12 @@ class PQCService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -2327,7 +2327,7 @@ class PQCService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2782,7 +2782,7 @@ class PQCService:
             )
 
 
-        total_assets = await self.db.scalar(
+        total_assets = self.db.scalar(
             select(
                 func.count(
                     Asset.id,

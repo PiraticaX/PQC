@@ -46,7 +46,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.storage import StorageObject
@@ -135,7 +135,7 @@ class StorageService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -230,7 +230,7 @@ class StorageService:
         Retrieve storage object.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(StorageObject)
             .where(
@@ -284,7 +284,7 @@ class StorageService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -303,7 +303,7 @@ class StorageService:
         Count stored objects.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -369,10 +369,10 @@ class StorageService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             storage_object
         )
 
@@ -531,7 +531,7 @@ class StorageService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -693,7 +693,7 @@ class StorageService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

@@ -47,7 +47,7 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -128,7 +128,7 @@ class UserUpdateRequest(
 )
 async def create_user(
     request: UserCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -179,7 +179,7 @@ async def create_user(
     "",
 )
 async def list_users(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -201,7 +201,7 @@ async def list_users(
 )
 async def get_user(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -240,7 +240,7 @@ async def get_user(
 async def update_user(
     user_id: UUID,
     request: UserUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -273,7 +273,7 @@ async def update_user(
 )
 async def delete_user(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -302,7 +302,7 @@ async def delete_user(
 )
 async def user_roles(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -328,7 +328,7 @@ async def user_roles(
 )
 async def user_permissions(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -359,7 +359,7 @@ async def user_permissions(
 )
 async def activate_user(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -385,7 +385,7 @@ async def activate_user(
 )
 async def deactivate_user(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -410,7 +410,7 @@ async def deactivate_user(
     "/statistics/summary",
 )
 async def user_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

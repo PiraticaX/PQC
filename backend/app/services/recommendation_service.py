@@ -39,7 +39,7 @@ from sqlalchemy import func
 from sqlalchemy import select
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -79,7 +79,7 @@ class RecommendationService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -220,7 +220,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -249,7 +249,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -280,7 +280,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -321,7 +321,7 @@ class RecommendationService:
         )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -339,12 +339,12 @@ class RecommendationService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -362,7 +362,7 @@ class RecommendationService:
         Rollback current transaction.
         """
 
-        await self.db.rollback()
+        self.db.rollback()
             # ============================================================
     # Recommendation Generation Engine
     # ============================================================
@@ -572,7 +572,7 @@ class RecommendationService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             recommendation,
         )
 
@@ -655,7 +655,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -712,7 +712,7 @@ class RecommendationService:
 
             for recommendation in recommendations:
 
-                await self.db.refresh(
+                self.db.refresh(
                     recommendation,
                 )
 
@@ -754,7 +754,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -832,7 +832,7 @@ class RecommendationService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             recommendation,
         )
 
@@ -1024,7 +1024,7 @@ class RecommendationService:
 
             for recommendation in recommendations:
 
-                await self.db.refresh(
+                self.db.refresh(
                     recommendation,
                 )
 
@@ -1616,7 +1616,7 @@ class RecommendationService:
         )
 
 
-        asset_count = await self.db.scalar(
+        asset_count = self.db.scalar(
             assets_stmt,
         )
 
@@ -1646,7 +1646,7 @@ class RecommendationService:
         )
 
 
-        finding_count = await self.db.scalar(
+        finding_count = self.db.scalar(
             findings_stmt,
         )
 
@@ -1930,7 +1930,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2142,7 +2142,7 @@ class RecommendationService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             recommendation,
         )
 
@@ -2260,7 +2260,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2298,7 +2298,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2345,7 +2345,7 @@ class RecommendationService:
 
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             select(
                 func.count(
                     Recommendation.id,
@@ -2357,7 +2357,7 @@ class RecommendationService:
         )
 
 
-        completed = await self.db.scalar(
+        completed = self.db.scalar(
             select(
                 func.count(
                     Recommendation.id,
@@ -2375,7 +2375,7 @@ class RecommendationService:
         )
 
 
-        open_count = await self.db.scalar(
+        open_count = self.db.scalar(
             select(
                 func.count(
                     Recommendation.id,
@@ -2394,7 +2394,7 @@ class RecommendationService:
 
 
 
-        priority_rows = await self.db.execute(
+        priority_rows = self.db.execute(
             select(
 
                 Recommendation.priority,
@@ -2425,7 +2425,7 @@ class RecommendationService:
 
 
 
-        status_rows = await self.db.execute(
+        status_rows = self.db.execute(
             select(
 
                 Recommendation.status,
@@ -2567,7 +2567,7 @@ class RecommendationService:
         )
 
 
-        generated = await self.db.scalar(
+        generated = self.db.scalar(
             select(
                 func.count(
                     Recommendation.id,
@@ -2585,7 +2585,7 @@ class RecommendationService:
         )
 
 
-        completed = await self.db.scalar(
+        completed = self.db.scalar(
             select(
                 func.count(
                     Recommendation.id,
@@ -2754,7 +2754,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2906,7 +2906,7 @@ class RecommendationService:
 
         if hard_delete:
 
-            await self.db.delete(
+            self.db.delete(
                 recommendation,
             )
 
@@ -2945,7 +2945,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2968,7 +2968,7 @@ class RecommendationService:
         await self.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             recommendation,
         )
 
@@ -3013,7 +3013,7 @@ class RecommendationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -3025,7 +3025,7 @@ class RecommendationService:
 
         for recommendation in recommendations:
 
-            await self.db.delete(
+            self.db.delete(
                 recommendation,
             )
 
@@ -3054,7 +3054,7 @@ class RecommendationService:
 
         try:
 
-            count = await self.db.scalar(
+            count = self.db.scalar(
                 select(
                     func.count(
                         Recommendation.id,

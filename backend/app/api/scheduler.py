@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -133,7 +133,7 @@ class ManualExecutionRequest(
 )
 async def create_scheduled_job(
     request: ScheduledJobCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -183,7 +183,7 @@ async def create_scheduled_job(
     "/jobs",
 )
 async def list_scheduled_jobs(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -205,7 +205,7 @@ async def list_scheduled_jobs(
 )
 async def get_scheduled_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -246,7 +246,7 @@ async def get_scheduled_job(
 async def update_scheduled_job(
     job_id: UUID,
     request: ScheduledJobUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -278,7 +278,7 @@ async def update_scheduled_job(
 )
 async def delete_scheduled_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -310,7 +310,7 @@ async def delete_scheduled_job(
 async def execute_job(
     job_id: UUID,
     request: ManualExecutionRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -338,7 +338,7 @@ async def execute_job(
 )
 async def pause_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -364,7 +364,7 @@ async def pause_job(
 )
 async def resume_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -395,7 +395,7 @@ async def resume_job(
 )
 async def execution_history(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -420,7 +420,7 @@ async def execution_history(
     "/workers",
 )
 async def scheduler_workers(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -446,7 +446,7 @@ async def scheduler_workers(
     "/statistics",
 )
 async def scheduler_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

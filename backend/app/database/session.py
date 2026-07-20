@@ -10,7 +10,6 @@ This module provides:
 - Session Factory
 - Scoped database sessions
 - FastAPI dependency injection
-- Database initialization
 
 Every ORM model in the application must inherit from Base.
 
@@ -24,8 +23,6 @@ class Asset(Base):
 
 from __future__ import annotations
 
-from sqlalchemy import text
-
 from collections.abc import Generator
 
 from sqlalchemy.orm import (
@@ -38,11 +35,6 @@ from app.core.logging import get_logger
 from app.database.database import engine
 
 logger = get_logger(__name__)
-
-
-# -------------------------------------------------------------------------
-# Base ORM Class
-# -------------------------------------------------------------------------
 
 
 class Base(DeclarativeBase):
@@ -100,50 +92,3 @@ def get_db() -> Generator[Session, None, None]:
 
     finally:
         db.close()
-
-
-# -------------------------------------------------------------------------
-# Database Initialization
-# -------------------------------------------------------------------------
-
-
-def create_database() -> None:
-    """
-    Creates all database tables.
-
-    During development this creates any tables that do not exist.
-
-    Production deployments should use Alembic migrations instead.
-    """
-
-    logger.info("Creating database tables...")
-
-    Base.metadata.create_all(bind=engine)
-
-    logger.info("Database initialization complete.")
-
-
-# -------------------------------------------------------------------------
-# Health Check
-# -------------------------------------------------------------------------
-
-
-def check_database_connection() -> bool:
-    """
-    Verify database connectivity.
-
-    Returns
-    -------
-    bool
-        True if the database is reachable.
-    """
-
-    try:
-        with engine.connect() as connection:
-            connection.exec_driver_sql(text("SELECT 1"))
-
-        return True
-
-    except Exception:
-        logger.exception("Database connectivity check failed.")
-        return False

@@ -110,8 +110,13 @@ class AssetGroup(
 
     assets = relationship(
         "Asset",
-        back_populates="group",
+        back_populates="asset_group",
         cascade="all, delete-orphan",
+    )
+
+    scheduled_scans = relationship(
+        "ScheduledScan",
+        back_populates="asset_group",
     )
 
 

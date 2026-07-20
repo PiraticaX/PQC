@@ -50,7 +50,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -156,7 +156,7 @@ class NotificationService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -326,7 +326,7 @@ class NotificationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -343,7 +343,7 @@ class NotificationService:
         Check asset existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             select(
                 func.count(
                     Asset.id,
@@ -434,7 +434,7 @@ class NotificationService:
         - Executive notifications
         """
 
-        asset_count = await self.db.scalar(
+        asset_count = self.db.scalar(
 
             select(
                 func.count(

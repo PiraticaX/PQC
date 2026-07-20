@@ -42,7 +42,7 @@ from uuid import UUID
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.asset import Asset
 from app.models.scan import Scan
@@ -86,7 +86,7 @@ class ScanService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -150,7 +150,7 @@ class ScanService:
             )
         )
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -189,7 +189,7 @@ class ScanService:
                 Scan.deleted_at.is_(None),
             )
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -212,7 +212,7 @@ class ScanService:
             )
         )
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -250,7 +250,7 @@ class ScanService:
             )
         )
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -280,11 +280,11 @@ class ScanService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
             logger.exception(
                 "Database commit failed."
@@ -560,7 +560,7 @@ class ScanService:
 
             await self.commit()
 
-            await self.db.refresh(
+            self.db.refresh(
                 scan,
             )
 
@@ -633,7 +633,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             duplicate,
         )
 
@@ -793,7 +793,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -883,7 +883,7 @@ class ScanService:
         )
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             count_stmt,
         )
 
@@ -938,7 +938,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1008,7 +1008,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1077,7 +1077,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1148,7 +1148,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1203,7 +1203,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1259,7 +1259,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1304,7 +1304,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1356,7 +1356,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1397,7 +1397,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1516,7 +1516,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1605,7 +1605,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1653,7 +1653,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1702,7 +1702,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1742,7 +1742,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -1819,7 +1819,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1878,7 +1878,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1918,7 +1918,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1955,7 +1955,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1992,7 +1992,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2045,7 +2045,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2075,7 +2075,7 @@ class ScanService:
         - Findings summary
         """
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2083,7 +2083,7 @@ class ScanService:
         )
 
 
-        running = await self.db.scalar(
+        running = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2095,7 +2095,7 @@ class ScanService:
         )
 
 
-        completed = await self.db.scalar(
+        completed = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2107,7 +2107,7 @@ class ScanService:
         )
 
 
-        failed = await self.db.scalar(
+        failed = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2119,7 +2119,7 @@ class ScanService:
         )
 
 
-        average_duration = await self.db.scalar(
+        average_duration = self.db.scalar(
             select(
                 func.avg(
                     Scan.duration_seconds,
@@ -2132,7 +2132,7 @@ class ScanService:
         )
 
 
-        findings = await self.db.execute(
+        findings = self.db.execute(
             select(
                 func.sum(
                     Scan.total_findings,
@@ -2209,7 +2209,7 @@ class ScanService:
         Return scan count grouped by scanner engine.
         """
 
-        rows = await self.db.execute(
+        rows = self.db.execute(
             select(
                 Scan.engine,
                 func.count(
@@ -2241,7 +2241,7 @@ class ScanService:
         Return scan count grouped by trigger.
         """
 
-        rows = await self.db.execute(
+        rows = self.db.execute(
             select(
                 Scan.trigger,
                 func.count(
@@ -2303,7 +2303,7 @@ class ScanService:
         )
 
 
-        recent_result = await self.db.execute(
+        recent_result = self.db.execute(
             recent_scans_stmt,
         )
 
@@ -2392,7 +2392,7 @@ class ScanService:
         - Queue pressure
         """
 
-        pending = await self.db.scalar(
+        pending = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2404,7 +2404,7 @@ class ScanService:
         )
 
 
-        queued = await self.db.scalar(
+        queued = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2416,7 +2416,7 @@ class ScanService:
         )
 
 
-        running = await self.db.scalar(
+        running = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2428,7 +2428,7 @@ class ScanService:
         )
 
 
-        failed = await self.db.scalar(
+        failed = self.db.scalar(
             select(func.count())
             .select_from(
                 Scan,
@@ -2523,7 +2523,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2544,7 +2544,7 @@ class ScanService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             scan,
         )
 
@@ -2598,7 +2598,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2610,7 +2610,7 @@ class ScanService:
 
         for scan in scans:
 
-            await self.db.delete(
+            self.db.delete(
                 scan,
             )
 
@@ -2663,7 +2663,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2675,7 +2675,7 @@ class ScanService:
 
         for scan in scans:
 
-            await self.db.delete(
+            self.db.delete(
                 scan,
             )
 
@@ -2774,7 +2774,7 @@ class ScanService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2820,7 +2820,7 @@ class ScanService:
 
         if hard_delete:
 
-            await self.db.delete(
+            self.db.delete(
                 scan,
             )
 

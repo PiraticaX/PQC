@@ -43,7 +43,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.queue_job import QueueJob
@@ -136,7 +136,7 @@ class QueueService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -201,7 +201,7 @@ class QueueService:
         Retrieve queue job.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(QueueJob)
             .where(
@@ -261,7 +261,7 @@ class QueueService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -300,7 +300,7 @@ class QueueService:
             )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             query
         )
 
@@ -352,10 +352,10 @@ class QueueService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             job
         )
 
@@ -474,7 +474,7 @@ class QueueService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -527,7 +527,7 @@ class QueueService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -589,7 +589,7 @@ class QueueService:
         job.retries += 1
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -651,7 +651,7 @@ class QueueService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -708,7 +708,7 @@ class QueueService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

@@ -42,7 +42,7 @@ from sqlalchemy import select
 from sqlalchemy import or_
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.search_index import SearchIndex
@@ -129,7 +129,7 @@ class SearchService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -206,7 +206,7 @@ class SearchService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -241,7 +241,7 @@ class SearchService:
         Remove indexed entity.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(SearchIndex)
             .where(
@@ -261,12 +261,12 @@ class SearchService:
 
         if document:
 
-            await self.db.delete(
+            self.db.delete(
                 document
             )
 
 
-            await self.db.commit()
+            self.db.commit()
 
 
 
@@ -360,7 +360,7 @@ class SearchService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             statement
         )
 

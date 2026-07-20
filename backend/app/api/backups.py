@@ -47,7 +47,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -131,7 +131,7 @@ class RetentionPolicyRequest(
 )
 async def create_backup(
     request: BackupCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -186,7 +186,7 @@ async def create_backup(
 async def list_backups(
     organization_id: UUID,
     status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -216,7 +216,7 @@ async def list_backups(
 )
 async def get_backup(
     backup_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -261,7 +261,7 @@ async def get_backup(
 )
 async def start_backup(
     backup_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -288,7 +288,7 @@ async def start_backup(
 async def complete_backup(
     backup_id: UUID,
     size_bytes: int,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -316,7 +316,7 @@ async def complete_backup(
 )
 async def delete_backup(
     backup_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -348,7 +348,7 @@ async def delete_backup(
 async def restore_backup(
     backup_id: UUID,
     request: BackupRestoreRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -383,7 +383,7 @@ async def restore_backup(
 )
 async def verify_backup(
     backup_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -409,7 +409,7 @@ async def verify_backup(
 )
 async def recovery_test(
     backup_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -440,7 +440,7 @@ async def recovery_test(
 )
 async def create_recovery_plan(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -472,7 +472,7 @@ async def create_recovery_plan(
 )
 async def enforce_retention(
     request: RetentionPolicyRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -507,7 +507,7 @@ async def enforce_retention(
 )
 async def backup_statistics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

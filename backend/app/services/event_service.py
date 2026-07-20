@@ -43,7 +43,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.event import Event
@@ -138,7 +138,7 @@ class EventService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -197,7 +197,7 @@ class EventService:
         Retrieve event.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Event)
             .where(
@@ -245,7 +245,7 @@ class EventService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -263,7 +263,7 @@ class EventService:
         Count events.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -322,10 +322,10 @@ class EventService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             event
         )
 
@@ -502,7 +502,7 @@ class EventService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

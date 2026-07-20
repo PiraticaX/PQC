@@ -50,7 +50,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.organization import Organization
@@ -135,7 +135,7 @@ class OrganizationService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -224,7 +224,7 @@ class OrganizationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -255,7 +255,7 @@ class OrganizationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -272,7 +272,7 @@ class OrganizationService:
         Check organization existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -317,7 +317,7 @@ class OrganizationService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -464,7 +464,7 @@ class OrganizationService:
         Count total organizations.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -634,10 +634,10 @@ class OrganizationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             organization,
         )
 
@@ -773,7 +773,7 @@ class OrganizationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -831,7 +831,7 @@ class OrganizationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -887,7 +887,7 @@ class OrganizationService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1058,7 +1058,7 @@ class OrganizationService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1116,7 +1116,7 @@ class OrganizationService:
         organization.owner_id = owner_id
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -3824,7 +3824,7 @@ class OrganizationService:
         organization.subscription_tier = tier
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

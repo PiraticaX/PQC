@@ -45,7 +45,7 @@ from uuid import UUID
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.finding import Finding
 from app.models.finding import FindingSeverity
@@ -89,7 +89,7 @@ class FindingService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -211,7 +211,7 @@ class FindingService:
         )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -246,7 +246,7 @@ class FindingService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -272,7 +272,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -314,7 +314,7 @@ class FindingService:
         )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -332,12 +332,12 @@ class FindingService:
 
         try:
 
-            await self.db.commit()
+            self.db.commit()
 
 
         except Exception:
 
-            await self.db.rollback()
+            self.db.rollback()
 
 
             logger.exception(
@@ -355,7 +355,7 @@ class FindingService:
         Rollback current transaction.
         """
 
-        await self.db.rollback()
+        self.db.rollback()
             # ============================================================
     # Serialization Helpers
     # ============================================================
@@ -609,7 +609,7 @@ class FindingService:
 
             await self.commit()
 
-            await self.db.refresh(
+            self.db.refresh(
                 finding,
             )
 
@@ -697,7 +697,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             duplicate,
         )
 
@@ -809,7 +809,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -846,7 +846,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -889,7 +889,7 @@ class FindingService:
             )
 
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
             stmt,
         )
 
@@ -1001,7 +1001,7 @@ class FindingService:
         )
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             count_stmt,
         )
 
@@ -1054,7 +1054,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1139,7 +1139,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1256,7 +1256,7 @@ class FindingService:
         )
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             count_stmt,
         )
 
@@ -1309,7 +1309,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1394,7 +1394,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1494,7 +1494,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1555,7 +1555,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1650,7 +1650,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1702,7 +1702,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1754,7 +1754,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1794,7 +1794,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1834,7 +1834,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -1983,7 +1983,7 @@ class FindingService:
 
             for finding in created:
 
-                await self.db.refresh(
+                self.db.refresh(
                     finding,
                 )
 
@@ -2025,7 +2025,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2093,7 +2093,7 @@ class FindingService:
 
         if hard_delete:
 
-            await self.db.delete(
+            self.db.delete(
                 finding,
             )
 
@@ -2143,7 +2143,7 @@ class FindingService:
             )
 
 
-        total = await self.db.scalar(
+        total = self.db.scalar(
             select(func.count())
             .select_from(
                 Finding,
@@ -2154,7 +2154,7 @@ class FindingService:
         )
 
 
-        avg_risk = await self.db.scalar(
+        avg_risk = self.db.scalar(
             select(
                 func.avg(
                     Finding.risk_score,
@@ -2171,7 +2171,7 @@ class FindingService:
         # Severity Distribution
         # --------------------------------------------------------
 
-        severity_rows = await self.db.execute(
+        severity_rows = self.db.execute(
             select(
                 Finding.severity,
                 func.count(
@@ -2203,7 +2203,7 @@ class FindingService:
         # Status Distribution
         # --------------------------------------------------------
 
-        status_rows = await self.db.execute(
+        status_rows = self.db.execute(
             select(
                 Finding.status,
                 func.count(
@@ -2281,7 +2281,7 @@ class FindingService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             select(
                 Finding.severity,
                 func.count(
@@ -2341,7 +2341,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2374,7 +2374,7 @@ class FindingService:
         statistics = await self.get_statistics()
 
 
-        critical = await self.db.scalar(
+        critical = self.db.scalar(
             select(func.count())
             .select_from(
                 Finding,
@@ -2388,7 +2388,7 @@ class FindingService:
         )
 
 
-        open_findings = await self.db.scalar(
+        open_findings = self.db.scalar(
             select(func.count())
             .select_from(
                 Finding,
@@ -2404,7 +2404,7 @@ class FindingService:
         )
 
 
-        resolved = await self.db.scalar(
+        resolved = self.db.scalar(
             select(func.count())
             .select_from(
                 Finding,
@@ -2432,7 +2432,7 @@ class FindingService:
         )
 
 
-        recent_result = await self.db.execute(
+        recent_result = self.db.execute(
             recent_stmt,
         )
 
@@ -2531,7 +2531,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2556,7 +2556,7 @@ class FindingService:
         0   = Maximum risk
         """
 
-        avg_risk = await self.db.scalar(
+        avg_risk = self.db.scalar(
             select(
                 func.avg(
                     Finding.risk_score,
@@ -2637,7 +2637,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2677,7 +2677,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2699,7 +2699,7 @@ class FindingService:
 
         await self.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             finding,
         )
 
@@ -2743,7 +2743,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -2755,7 +2755,7 @@ class FindingService:
 
         for finding in findings:
 
-            await self.db.delete(
+            self.db.delete(
                 finding,
             )
 
@@ -2793,7 +2793,7 @@ class FindingService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 

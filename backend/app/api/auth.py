@@ -44,7 +44,7 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -149,7 +149,7 @@ class ChangePasswordRequest(
 )
 async def login(
     request: LoginRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -210,7 +210,7 @@ async def login(
 )
 async def refresh_token(
     request: RefreshTokenRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -236,7 +236,7 @@ async def refresh_token(
 )
 async def logout(
     request: LogoutRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -262,7 +262,7 @@ async def logout(
 )
 async def verify_mfa(
     request: MFAVerificationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -290,7 +290,7 @@ async def verify_mfa(
 )
 async def change_password(
     request: ChangePasswordRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -324,7 +324,7 @@ async def change_password(
     "/me",
 )
 async def current_user(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -367,7 +367,7 @@ async def current_user(
     "/sessions",
 )
 async def active_sessions(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

@@ -43,7 +43,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.scheduled_job import ScheduledJob
@@ -138,7 +138,7 @@ class SchedulerService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -190,7 +190,7 @@ class SchedulerService:
         Retrieve scheduled job.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(ScheduledJob)
             .where(
@@ -238,7 +238,7 @@ class SchedulerService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -256,7 +256,7 @@ class SchedulerService:
         Count scheduled tasks.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -315,10 +315,10 @@ class SchedulerService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             schedule
         )
 
@@ -389,7 +389,7 @@ class SchedulerService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -441,7 +441,7 @@ class SchedulerService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -493,7 +493,7 @@ class SchedulerService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -540,12 +540,12 @@ class SchedulerService:
 
 
 
-        await self.db.delete(
+        self.db.delete(
             schedule
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

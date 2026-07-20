@@ -255,6 +255,12 @@ class Finding(
         back_populates="assigned_findings",
     )
 
+    ai_recommendations = relationship(
+        "AIRecommendation",
+        back_populates="finding",
+        cascade="all, delete-orphan",
+    )
+
     evidence = relationship(
         "FindingEvidence",
         back_populates="finding",

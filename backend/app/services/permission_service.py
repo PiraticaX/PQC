@@ -41,7 +41,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.permission import Permission
@@ -132,7 +132,7 @@ class PermissionService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -191,7 +191,7 @@ class PermissionService:
         Retrieve permission.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Permission)
             .where(
@@ -217,7 +217,7 @@ class PermissionService:
         Retrieve permission by name.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Permission)
             .where(
@@ -260,7 +260,7 @@ class PermissionService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -279,7 +279,7 @@ class PermissionService:
         Check permission existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -349,10 +349,10 @@ class PermissionService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             permission
         )
 
@@ -399,12 +399,12 @@ class PermissionService:
             )
 
 
-        await self.db.delete(
+        self.db.delete(
             permission
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

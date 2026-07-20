@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -118,7 +118,7 @@ class RoleUpdateRequest(
 )
 async def create_role(
     request: RoleCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -163,7 +163,7 @@ async def create_role(
     "",
 )
 async def list_roles(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -185,7 +185,7 @@ async def list_roles(
 )
 async def get_role(
     role_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -224,7 +224,7 @@ async def get_role(
 async def update_role(
     role_id: UUID,
     request: RoleUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -256,7 +256,7 @@ async def update_role(
 )
 async def delete_role(
     role_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -288,7 +288,7 @@ async def delete_role(
 async def assign_role_to_user(
     role_id: UUID,
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -317,7 +317,7 @@ async def assign_role_to_user(
 async def remove_role_from_user(
     role_id: UUID,
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -345,7 +345,7 @@ async def remove_role_from_user(
 )
 async def role_users(
     role_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -376,7 +376,7 @@ async def role_users(
 )
 async def role_permissions(
     role_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -403,7 +403,7 @@ async def role_permissions(
 async def assign_permission(
     role_id: UUID,
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -432,7 +432,7 @@ async def assign_permission(
 async def remove_permission(
     role_id: UUID,
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -464,7 +464,7 @@ async def remove_permission(
     "/statistics/summary",
 )
 async def role_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

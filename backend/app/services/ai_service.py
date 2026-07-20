@@ -49,7 +49,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.asset import Asset
@@ -88,7 +88,7 @@ class AIService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -299,7 +299,7 @@ class AIService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -331,7 +331,7 @@ class AIService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -524,7 +524,7 @@ class AIService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -607,7 +607,7 @@ class AIService:
         )
 
 
-        asset_count = await self.db.scalar(
+        asset_count = self.db.scalar(
             stmt,
         )
 

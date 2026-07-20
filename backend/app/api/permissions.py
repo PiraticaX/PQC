@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -121,7 +121,7 @@ class PermissionUpdateRequest(
 )
 async def create_permission(
     request: PermissionCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -170,7 +170,7 @@ async def create_permission(
     "",
 )
 async def list_permissions(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -192,7 +192,7 @@ async def list_permissions(
 )
 async def get_permission(
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -233,7 +233,7 @@ async def get_permission(
 async def update_permission(
     permission_id: UUID,
     request: PermissionUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -265,7 +265,7 @@ async def update_permission(
 )
 async def delete_permission(
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -296,7 +296,7 @@ async def delete_permission(
 )
 async def get_user_permissions(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -322,7 +322,7 @@ async def get_user_permissions(
 )
 async def get_role_permissions(
     role_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -349,7 +349,7 @@ async def get_role_permissions(
 async def assign_permission_to_role(
     role_id: UUID,
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -378,7 +378,7 @@ async def assign_permission_to_role(
 async def remove_permission_from_role(
     role_id: UUID,
     permission_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -413,7 +413,7 @@ async def check_permission(
     user_id: UUID,
     resource: str,
     action: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -449,7 +449,7 @@ async def check_permission(
     "/statistics/summary",
 )
 async def permission_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

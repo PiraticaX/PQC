@@ -8,7 +8,7 @@ Business logic for organization management.
 
 from __future__ import annotations
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from app.models.organization import Organization
@@ -22,7 +22,7 @@ class OrganizationService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
         self.db = db
 
@@ -40,9 +40,9 @@ class OrganizationService:
             organization
         )
 
-        await self.db.commit()
+        self.db.commit()
 
-        await self.db.refresh(
+        self.db.refresh(
             organization
         )
 
@@ -55,7 +55,7 @@ class OrganizationService:
         organization_id,
     ):
 
-        result = await self.db.execute(
+        result = self.db.execute(
             select(Organization)
             .where(
                 Organization.id == organization_id
@@ -68,7 +68,7 @@ class OrganizationService:
 
     async def list(self):
 
-        result = await self.db.execute(
+        result = self.db.execute(
             select(Organization)
         )
 
@@ -83,6 +83,6 @@ class OrganizationService:
 
         organization.soft_delete()
 
-        await self.db.commit()
+        self.db.commit()
 
         return True

@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -117,7 +117,7 @@ class EventProcessRequest(
 )
 async def create_event(
     request: EventCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -166,7 +166,7 @@ async def create_event(
     "",
 )
 async def list_events(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -188,7 +188,7 @@ async def list_events(
 )
 async def get_event(
     event_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -234,7 +234,7 @@ async def get_event(
 async def process_event(
     event_id: UUID,
     request: EventProcessRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -273,7 +273,7 @@ async def process_event(
 )
 async def retry_event(
     event_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -299,7 +299,7 @@ async def retry_event(
 )
 async def cancel_event(
     event_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -330,7 +330,7 @@ async def cancel_event(
 )
 async def enqueue_event(
     event_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -360,7 +360,7 @@ async def enqueue_event(
     "/statistics/summary",
 )
 async def event_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

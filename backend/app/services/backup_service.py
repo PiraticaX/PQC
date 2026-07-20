@@ -45,7 +45,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.backup import Backup
@@ -135,7 +135,7 @@ class BackupService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -211,7 +211,7 @@ class BackupService:
         Retrieve backup.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Backup)
             .where(
@@ -265,7 +265,7 @@ class BackupService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -284,7 +284,7 @@ class BackupService:
         Count backups.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -376,10 +376,10 @@ class BackupService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             backup
         )
 
@@ -438,7 +438,7 @@ class BackupService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -495,7 +495,7 @@ class BackupService:
         backup.size_bytes = size_bytes
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -552,7 +552,7 @@ class BackupService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -611,7 +611,7 @@ class BackupService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

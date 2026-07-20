@@ -348,10 +348,13 @@ class Asset(
         passive_deletes=True,
     )
 
-    reports = relationship(
-        "Report",
+    findings = relationship(
+        "Finding",
         back_populates="asset",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
+
         # ============================================================
     # Helper Properties
     # ============================================================

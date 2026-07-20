@@ -219,17 +219,6 @@ class Organization(
         cascade="all, delete-orphan",
     )
 
-    scheduled_scans = relationship(
-        "ScheduledScan",
-        back_populates="organization",
-        cascade="all, delete-orphan",
-    )
-
-    reports = relationship(
-        "Report",
-        back_populates="organization",
-    )
-
     roles = relationship(
         "Role",
         back_populates="organization",

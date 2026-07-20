@@ -245,7 +245,33 @@ class User(
 
     scheduled_scans = relationship(
         "ScheduledScan",
-        back_populates="created_by_user",
+        back_populates="owner",
+    )
+
+    reports = relationship(
+        "Report",
+        back_populates="generated_by",
+    )
+
+    audit_logs = relationship(
+        "AuditLog",
+        back_populates="user",
+    )
+
+    assigned_findings = relationship(
+        "Finding",
+        back_populates="assignee",
+        foreign_keys="Finding.assigned_to",
+    )
+
+    finding_comments = relationship(
+        "FindingComment",
+        back_populates="author",
+    )
+
+    finding_history = relationship(
+        "FindingHistory",
+        back_populates="actor",
     )
         # ==========================================================
     # Computed Properties

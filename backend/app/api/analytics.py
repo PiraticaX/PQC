@@ -38,7 +38,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -75,7 +75,7 @@ router = APIRouter(
 )
 async def security_dashboard(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -109,7 +109,7 @@ async def security_dashboard(
 )
 async def security_analytics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -136,7 +136,7 @@ async def security_analytics(
 async def risk_analysis(
     organization_id: UUID,
     period: str = "daily",
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -173,7 +173,7 @@ async def risk_analysis(
 )
 async def compliance_dashboard(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -199,7 +199,7 @@ async def compliance_dashboard(
 )
 async def executive_report(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -237,7 +237,7 @@ async def executive_report(
 )
 async def user_activity(
     user_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -262,7 +262,7 @@ async def user_activity(
     "/usage",
 )
 async def platform_usage(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -290,7 +290,7 @@ async def platform_usage(
 async def aggregate_metrics(
     metric_type: str,
     window: str = "daily",
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -317,7 +317,7 @@ async def aggregate_metrics(
     "/report",
 )
 async def analytics_report(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

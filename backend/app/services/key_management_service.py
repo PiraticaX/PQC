@@ -46,7 +46,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.crypto_key import CryptoKey
@@ -143,7 +143,7 @@ class KeyManagementService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -240,7 +240,7 @@ class KeyManagementService:
         Retrieve cryptographic key.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(CryptoKey)
             .where(
@@ -295,7 +295,7 @@ class KeyManagementService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -313,7 +313,7 @@ class KeyManagementService:
         Count managed keys.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -399,10 +399,10 @@ class KeyManagementService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             key
         )
 
@@ -476,7 +476,7 @@ class KeyManagementService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -535,7 +535,7 @@ class KeyManagementService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -598,7 +598,7 @@ class KeyManagementService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

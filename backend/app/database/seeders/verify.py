@@ -26,9 +26,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from sqlalchemy import func
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import exists, func, select
+from sqlalchemy.orm import Session
 
 from app.models.organization import Organization
 from app.models.permission import Permission
@@ -99,14 +98,14 @@ class VerificationSummary:
 # ==============================================================
 
 
-async def verify_organization(
-    db: AsyncSession,
+def verify_organization(
+    db: Session,
     summary: VerificationSummary,
 ) -> Organization:
 
     logger.info("Verifying organization...")
 
-    result = await db.execute(
+    result = db.execute(
         select(Organization)
     )
 
@@ -139,14 +138,14 @@ async def verify_organization(
 # ==============================================================
 
 
-async def verify_permissions(
-    db: AsyncSession,
+def verify_permissions(
+    db: Session,
     summary: VerificationSummary,
 ) -> None:
 
     logger.info("Verifying permissions...")
 
-    result = await db.execute(
+    result = db.execute(
         select(func.count(Permission.id))
     )
 
@@ -158,7 +157,7 @@ async def verify_permissions(
         "No permissions found.",
     )
 
-    duplicate_names = await db.execute(
+    duplicate_names = db.execute(
         select(
             Permission.name,
             func.count(Permission.id),
@@ -192,14 +191,14 @@ SYSTEM_ROLES = {
 }
 
 
-async def verify_roles(
-    db: AsyncSession,
+def verify_roles(
+    db: Session,
     summary: VerificationSummary,
 ) -> None:
 
     logger.info("Verifying roles...")
 
-    result = await db.execute(
+    result = db.execute(
         select(Role)
     )
 
@@ -218,7 +217,7 @@ async def verify_roles(
         f"Missing roles: {', '.join(sorted(missing))}",
     )
 
-    duplicate_slugs = await db.execute(
+    duplicate_slugs = db.execute(
         select(
             Role.slug,
             func.count(Role.id),
@@ -247,8 +246,6 @@ async def verify_roles(
         "One or more system roles are disabled.",
     )
 
-    from sqlalchemy import exists
-
 from app.core.config import settings
 
 from app.models.user import User
@@ -261,14 +258,14 @@ from app.models.role_permission import RolePermission
 # ==============================================================
 
 
-async def verify_role_permissions(
-    db: AsyncSession,
+def verify_role_permissions(
+    db: Session,
     summary: VerificationSummary,
 ) -> None:
 
     logger.info("Verifying role-permission mappings...")
 
-    result = await db.execute(
+    result = db.execute(
         select(func.count(RolePermission.role_id))
     )
 
@@ -280,7 +277,7 @@ async def verify_role_permissions(
         "No role-permission mappings exist.",
     )
 
-    orphan_roles = await db.execute(
+    orphan_roles = db.execute(
         select(RolePermission)
         .where(
             ~exists().where(
@@ -295,7 +292,7 @@ async def verify_role_permissions(
         "Orphan RolePermission records detected.",
     )
 
-    orphan_permissions = await db.execute(
+    orphan_permissions = db.execute(
         select(RolePermission)
         .where(
             ~exists().where(
@@ -317,14 +314,14 @@ async def verify_role_permissions(
 # ==============================================================
 
 
-async def verify_bootstrap_user(
-    db: AsyncSession,
+def verify_bootstrap_user(
+    db: Session,
     summary: VerificationSummary,
 ) -> User:
 
     logger.info("Verifying bootstrap administrator...")
 
-    result = await db.execute(
+    result = db.execute(
         select(User)
         .where(
             User.email ==
@@ -371,15 +368,15 @@ async def verify_bootstrap_user(
 # ==============================================================
 
 
-async def verify_user_roles(
-    db: AsyncSession,
+def verify_user_roles(
+    db: Session,
     summary: VerificationSummary,
     user: User,
 ) -> None:
 
     logger.info("Verifying administrator role assignment...")
 
-    result = await db.execute(
+    result = db.execute(
         select(UserRole)
         .join(Role)
         .where(
@@ -400,14 +397,14 @@ async def verify_user_roles(
 # ==============================================================
 
 
-async def verify_integrity(
-    db: AsyncSession,
+def verify_integrity(
+    db: Session,
     summary: VerificationSummary,
 ) -> None:
 
     logger.info("Running integrity checks...")
 
-    orphan_user_roles = await db.execute(
+    orphan_user_roles = db.execute(
         select(UserRole)
         .where(
             ~exists().where(
@@ -428,8 +425,8 @@ async def verify_integrity(
 # ==============================================================
 
 
-async def verify_bootstrap(
-    db: AsyncSession,
+def verify_bootstrap(
+    db: Session,
 ) -> VerificationSummary:
     """
     Perform complete bootstrap verification.
@@ -447,38 +444,38 @@ async def verify_bootstrap(
 
     summary = VerificationSummary()
 
-    await verify_organization(
+    verify_organization(
         db,
         summary,
     )
 
-    await verify_permissions(
+    verify_permissions(
         db,
         summary,
     )
 
-    await verify_roles(
+    verify_roles(
         db,
         summary,
     )
 
-    await verify_role_permissions(
+    verify_role_permissions(
         db,
         summary,
     )
 
-    user = await verify_bootstrap_user(
+    user = verify_bootstrap_user(
         db,
         summary,
     )
 
-    await verify_user_roles(
+    verify_user_roles(
         db,
         summary,
         user,
     )
 
-    await verify_integrity(
+    verify_integrity(
         db,
         summary,
     )

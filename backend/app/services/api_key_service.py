@@ -45,7 +45,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.api_key import APIKey
@@ -135,7 +135,7 @@ class APIKeyService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -240,7 +240,7 @@ class APIKeyService:
         Retrieve API key.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(APIKey)
             .where(
@@ -266,7 +266,7 @@ class APIKeyService:
         Retrieve user API keys.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(APIKey)
             .where(
@@ -294,7 +294,7 @@ class APIKeyService:
         Count user API keys.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -399,10 +399,10 @@ class APIKeyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             api_key
         )
 
@@ -469,7 +469,7 @@ class APIKeyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -526,7 +526,7 @@ class APIKeyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -684,7 +684,7 @@ class APIKeyService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

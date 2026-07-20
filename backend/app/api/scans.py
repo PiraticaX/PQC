@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -118,7 +118,7 @@ class ScanScheduleRequest(
 )
 async def create_scan(
     request: ScanCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -167,7 +167,7 @@ async def create_scan(
 async def list_scans(
     status: str | None = None,
     scan_type: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -195,7 +195,7 @@ async def list_scans(
 )
 async def get_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -240,7 +240,7 @@ async def get_scan(
 )
 async def start_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -266,7 +266,7 @@ async def start_scan(
 )
 async def stop_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -292,7 +292,7 @@ async def stop_scan(
 )
 async def cancel_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -318,7 +318,7 @@ async def cancel_scan(
 )
 async def retry_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -349,7 +349,7 @@ async def retry_scan(
 )
 async def scan_results(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -375,7 +375,7 @@ async def scan_results(
 )
 async def scan_findings(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -407,7 +407,7 @@ async def scan_findings(
 async def schedule_scan(
     scan_id: UUID,
     request: ScanScheduleRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -437,7 +437,7 @@ async def schedule_scan(
 )
 async def delete_scan(
     scan_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -467,7 +467,7 @@ async def delete_scan(
     "/statistics",
 )
 async def scan_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

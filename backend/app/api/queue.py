@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -116,7 +116,7 @@ class QueueRetryRequest(
 )
 async def create_job(
     request: QueueJobCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -166,7 +166,7 @@ async def create_job(
 )
 async def list_jobs(
     status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -192,7 +192,7 @@ async def list_jobs(
 )
 async def get_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -238,7 +238,7 @@ async def get_job(
 async def retry_job(
     job_id: UUID,
     request: QueueRetryRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -266,7 +266,7 @@ async def retry_job(
 )
 async def cancel_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -292,7 +292,7 @@ async def cancel_job(
 )
 async def pause_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -318,7 +318,7 @@ async def pause_job(
 )
 async def resume_job(
     job_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -348,7 +348,7 @@ async def resume_job(
     "/workers",
 )
 async def worker_status(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -370,7 +370,7 @@ async def worker_status(
 )
 async def restart_worker(
     worker_id: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -400,7 +400,7 @@ async def restart_worker(
     "/statistics",
 )
 async def queue_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

@@ -56,7 +56,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.user import User
@@ -135,7 +135,7 @@ class AuthService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -275,7 +275,7 @@ class AuthService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -304,7 +304,7 @@ class AuthService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -321,7 +321,7 @@ class AuthService:
         Check if user already exists.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -366,7 +366,7 @@ class AuthService:
         )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             stmt,
         )
 
@@ -1073,10 +1073,10 @@ class AuthService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             user,
         )
 
@@ -1152,7 +1152,7 @@ class AuthService:
         user.is_active = True
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1202,7 +1202,7 @@ class AuthService:
         user.is_active = False
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1263,7 +1263,7 @@ class AuthService:
         user.role = role
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -1312,7 +1312,7 @@ class AuthService:
         user.deleted_at = datetime.utcnow()
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -2371,7 +2371,7 @@ class AuthService:
 
 
         asset = (
-            await self.db.get(
+            self.db.get(
                 Asset,
                 asset_id,
             )

@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -133,7 +133,7 @@ class ControlUpdateRequest(
     "/frameworks",
 )
 async def list_frameworks(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -164,7 +164,7 @@ async def list_frameworks(
 )
 async def get_framework(
     framework: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -196,7 +196,7 @@ async def get_framework(
 )
 async def assess_compliance(
     request: ComplianceAssessmentRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -244,7 +244,7 @@ async def assess_compliance(
 )
 async def compliance_dashboard(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -275,7 +275,7 @@ async def compliance_dashboard(
 )
 async def list_controls(
     framework: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -301,7 +301,7 @@ async def list_controls(
 )
 async def get_control(
     control_id: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -328,7 +328,7 @@ async def get_control(
 async def update_control(
     control_id: str,
     request: ControlUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -363,7 +363,7 @@ async def update_control(
 )
 async def submit_evidence(
     request: EvidenceCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -398,7 +398,7 @@ async def submit_evidence(
 )
 async def list_evidence(
     control_id: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -424,7 +424,7 @@ async def list_evidence(
 )
 async def delete_evidence(
     evidence_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -456,7 +456,7 @@ async def delete_evidence(
 async def generate_compliance_report(
     organization_id: UUID,
     framework: str,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -488,7 +488,7 @@ async def generate_compliance_report(
 )
 async def compliance_reports(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -518,7 +518,7 @@ async def compliance_reports(
     "/statistics",
 )
 async def compliance_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

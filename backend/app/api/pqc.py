@@ -43,7 +43,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -225,7 +225,7 @@ async def supported_algorithms():
 )
 async def generate_pqc_keys(
     request: PQCKeyGenerationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -277,7 +277,7 @@ async def generate_pqc_keys(
 )
 async def pqc_encrypt(
     request: PQCEncryptRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -305,7 +305,7 @@ async def pqc_encrypt(
 )
 async def pqc_decrypt(
     request: PQCDecryptRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -338,7 +338,7 @@ async def pqc_decrypt(
 )
 async def pqc_sign(
     request: PQCSignRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -367,7 +367,7 @@ async def pqc_sign(
 )
 async def pqc_verify(
     request: PQCVerifyRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -403,7 +403,7 @@ async def pqc_verify(
 )
 async def pqc_readiness(
     request: PQCReadinessRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -440,7 +440,7 @@ async def pqc_readiness(
     "/migration-report",
 )
 async def migration_report(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -466,7 +466,7 @@ async def migration_report(
     "/statistics",
 )
 async def pqc_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

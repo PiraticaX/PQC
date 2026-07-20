@@ -8,7 +8,7 @@ Seeds all built-in system roles.
 
 Features
 --------
-- Async SQLAlchemy
+- Synchronous SQLAlchemy
 - Idempotent
 - Enterprise RBAC
 - Safe to execute multiple times
@@ -29,7 +29,7 @@ from __future__ import annotations
 import logging
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.role import Role
 
@@ -137,8 +137,8 @@ SYSTEM_ROLES: list[dict] = [
         "enabled": True,
     },
 ]
-async def seed_roles(
-    db: AsyncSession,
+def seed_roles(
+    db: Session,
 ) -> list[Role]:
     """
     Seed all built-in system roles.
@@ -155,7 +155,7 @@ async def seed_roles(
 
     for item in SYSTEM_ROLES:
 
-        result = await db.execute(
+        result = db.execute(
             select(Role).where(
                 Role.slug == item["slug"]
             )
@@ -201,11 +201,11 @@ async def seed_roles(
 
         seeded_roles.append(role)
 
-    await db.commit()
-
     # Refresh all instances so IDs and timestamps are available
+    db.flush()
+
     for role in seeded_roles:
-        await db.refresh(role)
+        db.refresh(role)
 
     logger.info(
         "Successfully seeded %d system roles.",
@@ -215,8 +215,8 @@ async def seed_roles(
     return seeded_roles
 
 
-async def get_system_role(
-    db: AsyncSession,
+def get_system_role(
+    db: Session,
     slug: str,
 ) -> Role | None:
     """
@@ -225,7 +225,7 @@ async def get_system_role(
     Parameters
     ----------
     db:
-        Active AsyncSession.
+        Active Session.
 
     slug:
         System role slug.
@@ -235,7 +235,7 @@ async def get_system_role(
     Role | None
     """
 
-    result = await db.execute(
+    result = db.execute(
         select(Role).where(
             Role.slug == slug,
             Role.system_role.is_(True),
@@ -245,14 +245,14 @@ async def get_system_role(
     return result.scalar_one_or_none()
 
 
-async def list_system_roles(
-    db: AsyncSession,
+def list_system_roles(
+    db: Session,
 ) -> list[Role]:
     """
     Return all built-in system roles ordered by priority.
     """
 
-    result = await db.execute(
+    result = db.execute(
         select(Role)
         .where(
             Role.system_role.is_(True),

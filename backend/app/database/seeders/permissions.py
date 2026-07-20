@@ -8,7 +8,7 @@ Seeds all built-in QShield permissions.
 
 Features
 --------
-- Async SQLAlchemy
+- Synchronous SQLAlchemy
 - Idempotent
 - Enterprise RBAC
 - Safe to execute multiple times
@@ -25,7 +25,7 @@ from __future__ import annotations
 import logging
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.permission import Permission
 
@@ -816,8 +816,8 @@ PERMISSIONS: list[dict[str, str]] = [
 
 ]
 
-async def seed_permissions(
-    db: AsyncSession,
+def seed_permissions(
+    db: Session,
 ) -> list[Permission]:
     """
     Seed all built-in permissions.
@@ -834,7 +834,7 @@ async def seed_permissions(
 
     for item in PERMISSIONS:
 
-        result = await db.execute(
+        result = db.execute(
             select(Permission).where(
                 Permission.name == item["name"]
             )
@@ -865,7 +865,7 @@ async def seed_permissions(
 
         permissions.append(permission)
 
-    await db.commit()
+    db.flush()
 
     logger.info(
         "Seeded %d permissions.",

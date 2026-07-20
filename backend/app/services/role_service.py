@@ -40,7 +40,7 @@ from sqlalchemy import select
 from sqlalchemy import func
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.models.role import Role
@@ -128,7 +128,7 @@ class RoleService:
 
     def __init__(
         self,
-        db: AsyncSession,
+        db: Session,
     ):
 
         self.db = db
@@ -199,7 +199,7 @@ class RoleService:
         Retrieve role by ID.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Role)
             .where(
@@ -225,7 +225,7 @@ class RoleService:
         Retrieve role by name.
         """
 
-        result = await self.db.execute(
+        result = self.db.execute(
 
             select(Role)
             .where(
@@ -268,7 +268,7 @@ class RoleService:
             )
 
 
-        result = await self.db.execute(
+        result = self.db.execute(
             query
         )
 
@@ -287,7 +287,7 @@ class RoleService:
         Check role existence.
         """
 
-        count = await self.db.scalar(
+        count = self.db.scalar(
 
             select(
                 func.count(
@@ -359,10 +359,10 @@ class RoleService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
-        await self.db.refresh(
+        self.db.refresh(
             role
         )
 
@@ -426,7 +426,7 @@ class RoleService:
 
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 
@@ -477,7 +477,7 @@ class RoleService:
         )
 
 
-        await self.db.commit()
+        self.db.commit()
 
 
 

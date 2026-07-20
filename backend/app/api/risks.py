@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -146,7 +146,7 @@ class RiskCalculationRequest(
 )
 async def create_risk(
     request: RiskCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -197,7 +197,7 @@ async def create_risk(
 async def list_risks(
     category: str | None = None,
     risk_status: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -225,7 +225,7 @@ async def list_risks(
 )
 async def get_risk(
     risk_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -266,7 +266,7 @@ async def get_risk(
 async def update_risk(
     risk_id: UUID,
     request: RiskUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -298,7 +298,7 @@ async def update_risk(
 )
 async def delete_risk(
     risk_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -330,7 +330,7 @@ async def delete_risk(
 async def calculate_risk(
     risk_id: UUID,
     request: RiskCalculationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -365,7 +365,7 @@ async def calculate_risk(
     "/calculate",
 )
 async def calculate_global_risk(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -393,7 +393,7 @@ async def calculate_global_risk(
 async def mitigate_risk(
     risk_id: UUID,
     request: RiskMitigationRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -423,7 +423,7 @@ async def mitigate_risk(
 )
 async def accept_risk(
     risk_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -449,7 +449,7 @@ async def accept_risk(
 )
 async def close_risk(
     risk_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -480,7 +480,7 @@ async def close_risk(
 )
 async def risk_findings(
     risk_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -510,7 +510,7 @@ async def risk_findings(
     "/dashboard/summary",
 )
 async def risk_dashboard(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -532,7 +532,7 @@ async def risk_dashboard(
 )
 async def risk_trends(
     period: str = "monthly",
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -557,7 +557,7 @@ async def risk_trends(
     "/statistics",
 )
 async def risk_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

@@ -20,7 +20,7 @@ from __future__ import annotations
 import logging
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.models.permission import Permission
 from app.models.role import Role
@@ -279,8 +279,8 @@ ROLE_PERMISSION_MAP: dict[str, list[str]] = {
 }
 
 
-async def seed_role_permissions(
-    db: AsyncSession,
+def seed_role_permissions(
+    db: Session,
 ) -> None:
     """
     Seed built-in role permissions.
@@ -293,13 +293,13 @@ async def seed_role_permissions(
 
     logger.info("Seeding role permissions...")
 
-    roles_result = await db.execute(select(Role))
+    roles_result = db.execute(select(Role))
     roles = {
         role.slug: role
         for role in roles_result.scalars().all()
     }
 
-    permissions_result = await db.execute(select(Permission))
+    permissions_result = db.execute(select(Permission))
     permissions = {
         permission.name: permission
         for permission in permissions_result.scalars().all()
@@ -329,7 +329,7 @@ async def seed_role_permissions(
                 )
                 continue
 
-            existing = await db.execute(
+            existing = db.execute(
                 select(RolePermission).where(
                     RolePermission.role_id == role.id,
                     RolePermission.permission_id == permission.id,
@@ -348,7 +348,7 @@ async def seed_role_permissions(
 
             created += 1
 
-    await db.commit()
+    db.flush()
 
     logger.info(
         "Created %d role-permission mappings.",
@@ -356,15 +356,15 @@ async def seed_role_permissions(
     )
 
 
-async def get_role_permissions(
-    db: AsyncSession,
+def get_role_permissions(
+    db: Session,
     role_slug: str,
 ) -> list[str]:
     """
     Return permission names assigned to a role.
     """
 
-    result = await db.execute(
+    result = db.execute(
         select(Role)
         .where(Role.slug == role_slug)
     )
@@ -374,7 +374,7 @@ async def get_role_permissions(
     if role is None:
         return []
 
-    await db.refresh(role)
+    db.refresh(role)
 
     return sorted(
         [

@@ -46,7 +46,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -133,7 +133,7 @@ class ReportScheduleRequest(
 )
 async def create_report(
     request: ReportCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -183,7 +183,7 @@ async def create_report(
 )
 async def list_reports(
     report_type: str | None = None,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -209,7 +209,7 @@ async def list_reports(
 )
 async def get_report(
     report_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -249,7 +249,7 @@ async def get_report(
 )
 async def delete_report(
     report_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -281,7 +281,7 @@ async def delete_report(
 async def generate_report(
     report_id: UUID,
     request: ReportGenerateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -323,7 +323,7 @@ async def generate_report(
 )
 async def download_report(
     report_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -355,7 +355,7 @@ async def download_report(
 async def schedule_report(
     report_id: UUID,
     request: ReportScheduleRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -385,7 +385,7 @@ async def schedule_report(
 )
 async def remove_report_schedule(
     report_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -415,7 +415,7 @@ async def remove_report_schedule(
     "/templates/list",
 )
 async def list_report_templates(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -441,7 +441,7 @@ async def list_report_templates(
     "/statistics",
 )
 async def report_statistics(
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):

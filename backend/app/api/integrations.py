@@ -45,7 +45,7 @@ from fastapi import status
 from pydantic import BaseModel
 
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 from app.core.database import get_db
@@ -135,7 +135,7 @@ class CredentialRequest(
 async def create_integration(
     organization_id: UUID,
     request: IntegrationCreateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ) -> dict[str, Any]:
@@ -191,7 +191,7 @@ async def create_integration(
 )
 async def list_integrations(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -217,7 +217,7 @@ async def list_integrations(
 )
 async def get_integration(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -258,7 +258,7 @@ async def get_integration(
 async def update_integration(
     integration_id: UUID,
     request: IntegrationUpdateRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -290,7 +290,7 @@ async def update_integration(
 )
 async def delete_integration(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -321,7 +321,7 @@ async def delete_integration(
 )
 async def test_connection(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -347,7 +347,7 @@ async def test_connection(
 )
 async def disconnect_integration(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -379,7 +379,7 @@ async def disconnect_integration(
 async def attach_credentials(
     integration_id: UUID,
     request: CredentialRequest,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -408,7 +408,7 @@ async def attach_credentials(
 )
 async def rotate_credentials(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -439,7 +439,7 @@ async def rotate_credentials(
 )
 async def integration_health(
     integration_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
@@ -465,7 +465,7 @@ async def integration_health(
 )
 async def integration_statistics(
     organization_id: UUID,
-    db: AsyncSession = Depends(
+    db: Session = Depends(
         get_db
     ),
 ):
