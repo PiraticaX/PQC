@@ -61,6 +61,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 
+from app.core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+)
+
 
 logger = logging.getLogger(__name__)
 
@@ -154,18 +161,6 @@ class AuthService:
 
 
     REFRESH_TOKEN_EXPIRE_DAYS = 30
-
-
-
-    password_context = CryptContext(
-
-        schemes=[
-            "bcrypt"
-        ],
-
-        deprecated="auto",
-
-    )
 
 
 

@@ -64,6 +64,7 @@ class Severity(str, enum.Enum):
     MEDIUM = "medium"
     LOW = "low"
     INFO = "info"
+FindingSeverity = Severity
 
 
 class FindingStatus(str, enum.Enum):

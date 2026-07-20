@@ -393,7 +393,6 @@ class ScanDetail(ScanResponse):
     metadata: dict[str, str] = Field(
         default_factory=dict,
     )
-    from uuid import UUID
 
 from pydantic import Field
 

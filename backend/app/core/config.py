@@ -40,7 +40,24 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
+BOOTSTRAP_ORGANIZATION_NAME: str = "QShield Enterprise"
+BOOTSTRAP_ORGANIZATION_LEGAL_NAME: str = "QShield Enterprise"
+BOOTSTRAP_ORGANIZATION_DESCRIPTION: str = "Enterprise Post-Quantum Security Platform"
 
+BOOTSTRAP_DOMAIN: str = "qshield.local"
+BOOTSTRAP_WEBSITE: str = "https://qshield.local"
+
+BOOTSTRAP_CONTACT_NAME: str = "System Administrator"
+BOOTSTRAP_CONTACT_EMAIL: str = "admin@qshield.local"
+BOOTSTRAP_CONTACT_PHONE: str = ""
+
+BOOTSTRAP_COUNTRY: str = "Global"
+BOOTSTRAP_TIMEZONE: str = "UTC"
+
+BOOTSTRAP_ADMIN_EMAIL: str = "admin@qshield.local"
+BOOTSTRAP_ADMIN_PASSWORD: str = "ChangeMe123!"
+BOOTSTRAP_ADMIN_FIRST_NAME: str = "System"
+BOOTSTRAP_ADMIN_LAST_NAME: str = "Administrator"
 
 # ============================================================
 # Application Settings

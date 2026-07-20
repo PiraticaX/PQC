@@ -36,7 +36,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import status
 
-
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -182,7 +182,7 @@ async def readiness_check(
     try:
 
         await db.execute(
-            "SELECT 1"
+            text("SELECT 1")
         )
 
 

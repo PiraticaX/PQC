@@ -24,6 +24,8 @@ class Asset(Base):
 
 from __future__ import annotations
 
+from sqlalchemy import text
+
 from collections.abc import Generator
 
 from sqlalchemy.orm import (
@@ -138,7 +140,7 @@ def check_database_connection() -> bool:
 
     try:
         with engine.connect() as connection:
-            connection.exec_driver_sql("SELECT 1")
+            connection.exec_driver_sql(text("SELECT 1"))
 
         return True
 

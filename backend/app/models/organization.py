@@ -80,13 +80,13 @@ class SubscriptionTier(str, enum.Enum):
 
 
 class Organization(
+    Base,
     UUIDMixin,
     TimestampMixin,
     SoftDeleteMixin,
     AuditMixin,
     NameMixin,
     DescriptionMixin,
-    Base,
 ):
     """
     Root entity of the QShield platform.
@@ -228,6 +228,12 @@ class Organization(
     reports = relationship(
         "Report",
         back_populates="organization",
+    )
+
+    roles = relationship(
+        "Role",
+        back_populates="organization",
+        cascade="all, delete-orphan",
     )
 
     # ------------------------------------------------------------------

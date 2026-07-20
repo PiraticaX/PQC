@@ -12,24 +12,36 @@ Provides:
 - Created/Updated timestamps
 - Soft delete support
 - Description field
+- Audit helpers
+- Lifecycle helpers
 
 Compatible with SQLAlchemy 2.0.
 """
 
 from __future__ import annotations
 
+
 import uuid
+
 from datetime import UTC
 from datetime import datetime
+
 
 from sqlalchemy import DateTime
 from sqlalchemy import String
 from sqlalchemy import Text
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import declared_attr
-from sqlalchemy.orm import mapped_column
+
+
+from sqlalchemy.orm import (
+    Mapped,
+    declared_attr,
+    mapped_column,
+    declarative_mixin,
+)
+
 
 from app.database.types import GUID
+
 
 
 # ============================================================
@@ -37,6 +49,7 @@ from app.database.types import GUID
 # ============================================================
 
 
+@declarative_mixin
 class UUIDMixin:
     """
     UUID primary key.
@@ -46,6 +59,7 @@ class UUIDMixin:
 
     @declared_attr
     def id(cls) -> Mapped[uuid.UUID]:
+
         return mapped_column(
             GUID(),
             primary_key=True,
@@ -54,26 +68,32 @@ class UUIDMixin:
         )
 
 
+
 # ============================================================
 # Timestamp
 # ============================================================
 
 
+@declarative_mixin
 class TimestampMixin:
     """
     Automatic timestamps.
     """
 
+
     @declared_attr
     def created_at(cls) -> Mapped[datetime]:
+
         return mapped_column(
             DateTime(timezone=True),
             default=lambda: datetime.now(UTC),
             nullable=False,
         )
 
+
     @declared_attr
     def updated_at(cls) -> Mapped[datetime]:
+
         return mapped_column(
             DateTime(timezone=True),
             default=lambda: datetime.now(UTC),
@@ -82,71 +102,81 @@ class TimestampMixin:
         )
 
 
+
 # ============================================================
 # Soft Delete
 # ============================================================
 
 
+@declarative_mixin
 class SoftDeleteMixin:
     """
     Soft deletion support.
     """
 
+
     @declared_attr
     def deleted_at(cls) -> Mapped[datetime | None]:
+
         return mapped_column(
             DateTime(timezone=True),
             nullable=True,
             default=None,
         )
 
+
     @property
     def is_deleted(self) -> bool:
-        """
-        Returns True if the row has been soft deleted.
-        """
+
         return self.deleted_at is not None
+
+
 
     @property
     def is_active(self) -> bool:
-        """
-        Returns True if the row is active.
-        """
+
         return self.deleted_at is None
 
+
+
     def soft_delete(self) -> None:
-        """
-        Mark the row as deleted.
-        """
+
         self.deleted_at = datetime.now(UTC)
 
+
+
     def restore(self) -> None:
-        """
-        Restore a previously deleted row.
-        """
+
         self.deleted_at = None
 
+
+
     def mark_deleted(self) -> None:
-        """
-        Alias for soft_delete().
-        """
+
         self.soft_delete()
-        # ============================================================
+
+
+
+# ============================================================
 # Description
 # ============================================================
 
 
+@declarative_mixin
 class DescriptionMixin:
     """
-    Optional description field shared by many entities.
+    Optional description field.
     """
+
 
     @declared_attr
     def description(cls) -> Mapped[str | None]:
+
         return mapped_column(
             Text,
             nullable=True,
         )
+
 
 
 # ============================================================
@@ -154,48 +184,65 @@ class DescriptionMixin:
 # ============================================================
 
 
+@declarative_mixin
 class NameMixin:
     """
-    Generic human-readable name.
+    Generic name field.
     """
+
 
     @declared_attr
     def name(cls) -> Mapped[str]:
+
         return mapped_column(
             String(255),
             nullable=False,
         )
 
 
+
 # ============================================================
-# Created / Updated By
+# Created By
 # ============================================================
 
 
+@declarative_mixin
 class CreatedByMixin:
     """
-    Optional creator tracking.
+    Creator tracking.
     """
+
 
     @declared_attr
     def created_by(cls) -> Mapped[uuid.UUID | None]:
+
         return mapped_column(
             GUID(),
             nullable=True,
         )
 
 
+
+# ============================================================
+# Updated By
+# ============================================================
+
+
+@declarative_mixin
 class UpdatedByMixin:
     """
-    Optional last-modifier tracking.
+    Modifier tracking.
     """
+
 
     @declared_attr
     def updated_by(cls) -> Mapped[uuid.UUID | None]:
+
         return mapped_column(
             GUID(),
             nullable=True,
         )
+
 
 
 # ============================================================
@@ -203,23 +250,32 @@ class UpdatedByMixin:
 # ============================================================
 
 
+@declarative_mixin
 class EnableDisableMixin:
     """
-    Generic enabled/disabled state.
+    Enabled state helper.
     """
+
 
     @declared_attr
     def enabled(cls) -> Mapped[bool]:
+
         return mapped_column(
             default=True,
             nullable=False,
         )
 
+
     def enable(self) -> None:
+
         self.enabled = True
 
+
+
     def disable(self) -> None:
+
         self.enabled = False
+
 
 
 # ============================================================
@@ -227,16 +283,25 @@ class EnableDisableMixin:
 # ============================================================
 
 
-class AuditMixin(
+@declarative_mixin
+class AuditMixin:
+    """
+    Marker mixin.
+
+    Intentionally does not inherit UUIDMixin
+    or TimestampMixin.
+
+    Models should explicitly declare:
+
     UUIDMixin,
     TimestampMixin,
-):
-    """
-    Convenience mixin combining the most common
-    auditing columns.
+    AuditMixin
+
+    if required.
     """
 
     pass
+
 
 
 # ============================================================
@@ -244,6 +309,7 @@ class AuditMixin(
 # ============================================================
 
 
+@declarative_mixin
 class LifecycleMixin(
     TimestampMixin,
     SoftDeleteMixin,
@@ -255,11 +321,13 @@ class LifecycleMixin(
     pass
 
 
+
 # ============================================================
 # Full Entity Mixin
 # ============================================================
 
 
+@declarative_mixin
 class EntityMixin(
     UUIDMixin,
     TimestampMixin,
@@ -267,12 +335,13 @@ class EntityMixin(
     DescriptionMixin,
 ):
     """
-    Common base used by most QShield entities.
+    Common entity mixin.
     """
 
     pass
 
 
+
 # ============================================================
 # End of File
-# ============================================================
+# =========================================================
