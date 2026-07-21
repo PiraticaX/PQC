@@ -147,7 +147,7 @@ class ChangePasswordRequest(
     "/login",
     status_code=status.HTTP_200_OK,
 )
-async def login(
+def login(
     request: LoginRequest,
     db: Session = Depends(
         get_db
@@ -175,7 +175,7 @@ async def login(
 
     try:
 
-        result = await service.authenticate(
+        result =  service.authenticate(
 
             email=request.email,
 
@@ -208,7 +208,7 @@ async def login(
 @router.post(
     "/refresh",
 )
-async def refresh_token(
+def refresh_token(
     request: RefreshTokenRequest,
     db: Session = Depends(
         get_db
@@ -223,7 +223,7 @@ async def refresh_token(
     )
 
 
-    return await service.refresh_token(
+    return  service.refresh_token(
 
         request.refresh_token
 
@@ -234,7 +234,7 @@ async def refresh_token(
 @router.post(
     "/logout",
 )
-async def logout(
+def logout(
     request: LogoutRequest,
     db: Session = Depends(
         get_db
@@ -249,7 +249,7 @@ async def logout(
     )
 
 
-    return await service.revoke_session(
+    return  service.revoke_session(
 
         request.session_id
 
@@ -260,7 +260,7 @@ async def logout(
 @router.post(
     "/mfa/verify",
 )
-async def verify_mfa(
+def verify_mfa(
     request: MFAVerificationRequest,
     db: Session = Depends(
         get_db
@@ -275,7 +275,7 @@ async def verify_mfa(
     )
 
 
-    return await service.verify_mfa(
+    return  service.verify_mfa(
 
         session_id=request.session_id,
 
@@ -288,7 +288,7 @@ async def verify_mfa(
 @router.post(
     "/change-password",
 )
-async def change_password(
+def change_password(
     request: ChangePasswordRequest,
     db: Session = Depends(
         get_db
@@ -303,7 +303,7 @@ async def change_password(
     )
 
 
-    return await service.change_password(
+    return  service.change_password(
 
         current_password=
             request.current_password,
@@ -323,7 +323,7 @@ async def change_password(
 @router.get(
     "/me",
 )
-async def current_user(
+def current_user(
     db: Session = Depends(
         get_db
     ),
@@ -366,7 +366,7 @@ async def current_user(
 @router.get(
     "/sessions",
 )
-async def active_sessions(
+def active_sessions(
     db: Session = Depends(
         get_db
     ),
@@ -399,7 +399,7 @@ async def active_sessions(
 @router.get(
     "/security-status",
 )
-async def authentication_security_status(
+def authentication_security_status(
 ):
     """
     Authentication security posture.

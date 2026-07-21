@@ -134,9 +134,9 @@ class AuthService:
 
 
     def __init__(
-        self,
-        db: Session,
-    ):
+    self,
+    db: Session,
+):
 
         self.db = db
 
@@ -255,7 +255,7 @@ class AuthService:
     # Organization Identity Context
     # ============================================================
 
-    async def get_user(
+    def get_user(
         self,
         user_id: UUID,
     ) -> User | None:
@@ -284,7 +284,7 @@ class AuthService:
 
 
 
-    async def get_user_by_email(
+    def get_user_by_email(
         self,
         email: str,
     ) -> User | None:
@@ -313,7 +313,7 @@ class AuthService:
 
 
 
-    async def user_exists(
+    def user_exists(
         self,
         email: str,
     ) -> bool:
@@ -321,7 +321,7 @@ class AuthService:
         Check if user already exists.
         """
 
-        count = self.db.scalar(
+        count =  self.db.scalar(
 
             select(
                 func.count(
@@ -343,7 +343,7 @@ class AuthService:
 
 
 
-    async def get_organization_users(
+    def get_organization_users(
         self,
         organization_id: UUID,
     ) -> list[User]:
@@ -366,7 +366,7 @@ class AuthService:
         )
 
 
-        result = self.db.execute(
+        result =  self.db.execute(
             stmt,
         )
 
@@ -377,7 +377,7 @@ class AuthService:
 
 
 
-    async def get_user_context(
+    def get_user_context(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -391,7 +391,7 @@ class AuthService:
         - Security decisions
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -419,7 +419,7 @@ class AuthService:
 
             "role":
 
-                user.role,
+                self.get_primary_role(user),
 
 
             "organization_id":
@@ -448,7 +448,7 @@ class AuthService:
 
 
 
-    async def validate_user_status(
+    def validate_user_status(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -456,7 +456,7 @@ class AuthService:
         Validate account status.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -513,7 +513,7 @@ class AuthService:
 
 
 
-    async def get_role_permissions(
+    def get_role_permissions(
         self,
         role: str,
     ) -> list[str]:
@@ -536,7 +536,7 @@ class AuthService:
 
 
 
-    async def validate_role(
+    def validate_role(
         self,
         role: str,
     ) -> bool:
@@ -571,7 +571,7 @@ class AuthService:
         - adaptive hashing
         """
 
-        return self.password_context.hash(
+        return hash_password(
             password,
         )
 
@@ -586,7 +586,7 @@ class AuthService:
         Verify password against hash.
         """
 
-        return self.password_context.verify(
+        return verify_password(
 
             plain_password,
 
@@ -883,7 +883,7 @@ class AuthService:
 
 
 
-    async def check_credential_security(
+    def check_credential_security(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -926,7 +926,7 @@ class AuthService:
     # Account Creation Engine
     # ============================================================
 
-    async def validate_registration_data(
+    def validate_registration_data(
         self,
         *,
         email: str,
@@ -941,7 +941,7 @@ class AuthService:
 
 
 
-        if await self.user_exists(
+        if  self.user_exists(
             email,
         ):
 
@@ -970,7 +970,7 @@ class AuthService:
 
 
 
-        if not await self.validate_role(
+        if not  self.validate_role(
             role,
         ):
 
@@ -999,7 +999,7 @@ class AuthService:
 
 
 
-    async def create_user_account(
+    def create_user_account(
         self,
         *,
         email: str,
@@ -1022,7 +1022,7 @@ class AuthService:
         """
 
         validation = (
-            await self.validate_registration_data(
+             self.validate_registration_data(
 
                 email=email,
 
@@ -1108,7 +1108,7 @@ class AuthService:
 
             "role":
 
-                user.role,
+                self.get_primary_role(user),
 
 
             "organization_id":
@@ -1128,7 +1128,7 @@ class AuthService:
 
 
 
-    async def activate_user(
+    def activate_user(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -1136,7 +1136,7 @@ class AuthService:
         Activate user account.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -1178,7 +1178,7 @@ class AuthService:
 
 
 
-    async def deactivate_user(
+    def deactivate_user(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -1186,7 +1186,7 @@ class AuthService:
         Disable user account.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -1228,7 +1228,7 @@ class AuthService:
 
 
 
-    async def update_user_role(
+    def update_user_role(
         self,
         user_id: UUID,
         role: str,
@@ -1237,7 +1237,7 @@ class AuthService:
         Update user role.
         """
 
-        if not await self.validate_role(
+        if not  self.validate_role(
             role,
         ):
 
@@ -1247,7 +1247,7 @@ class AuthService:
 
 
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -1260,8 +1260,8 @@ class AuthService:
 
 
 
-        user.role = role
-
+        # TODO: Migrate to user_roles association table.
+        # Legacy implementation removed after RBAC refactor.
 
         self.db.commit()
 
@@ -1289,7 +1289,7 @@ class AuthService:
 
 
 
-    async def delete_user_account(
+    def delete_user_account(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -1297,7 +1297,7 @@ class AuthService:
         Soft delete user account.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -1340,7 +1340,20 @@ class AuthService:
     # Session Creation Workflow
     # ============================================================
 
-    async def authenticate_user(
+    def get_primary_role(self, user) -> str | None:
+        """
+    Return the user's primary role name.
+    """
+
+        if not user.user_roles:
+            return None
+
+        if user.user_roles[0].role is None:
+            return None
+
+        return user.user_roles[0].role.name
+
+    def authenticate_user(
         self,
         *,
         email: str,
@@ -1363,7 +1376,7 @@ class AuthService:
         Authentication Result
         """
 
-        user = await self.get_user_by_email(
+        user =  self.get_user_by_email(
             email,
         )
 
@@ -1431,7 +1444,7 @@ class AuthService:
 
 
         status = (
-            await self.validate_user_status(
+             self.validate_user_status(
                 user.id,
             )
         )
@@ -1475,7 +1488,7 @@ class AuthService:
 
             "role":
 
-                user.role,
+                self.get_primary_role(user),
 
 
             "organization_id":
@@ -1490,10 +1503,13 @@ class AuthService:
                 self.timestamp(),
 
         }
+    def authenticate(self, *args, **kwargs):
+        """
+        Compatibility wrapper for existing API routes.
+     """
+        return self.authenticate_user(*args, **kwargs)
 
-
-
-    async def login(
+    def login(
         self,
         *,
         email: str,
@@ -1510,7 +1526,7 @@ class AuthService:
         """
 
         authentication = (
-            await self.authenticate_user(
+             self.authenticate_user(
                 email=email,
                 password=password,
             )
@@ -1524,7 +1540,7 @@ class AuthService:
 
 
         session = (
-            await self.create_session(
+             self.create_session(
                 user_id=UUID(
                     authentication[
                         "user_id"
@@ -1559,7 +1575,7 @@ class AuthService:
 
 
 
-    async def create_session(
+    def create_session(
         self,
         *,
         user_id: UUID,
@@ -1612,7 +1628,7 @@ class AuthService:
 
 
 
-    async def logout(
+    def logout(
         self,
         *,
         session_id: str,
@@ -1641,7 +1657,7 @@ class AuthService:
 
 
 
-    async def validate_session(
+    def validate_session(
         self,
         session_id: str,
     ) -> dict[str, Any]:
@@ -1674,7 +1690,7 @@ class AuthService:
 
 
 
-    async def get_login_activity(
+    def get_login_activity(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -1757,7 +1773,7 @@ class AuthService:
 
             "role":
 
-                role,
+                self.get_primary_role(user),
 
 
             "organization_id":
@@ -2046,7 +2062,7 @@ class AuthService:
 
 
 
-    async def generate_auth_tokens(
+    def generate_auth_tokens(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -2054,7 +2070,7 @@ class AuthService:
         Generate complete token pair.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -2071,7 +2087,7 @@ class AuthService:
 
                 user_id=user.id,
 
-                role=user.role,
+                role=self.get_primary_role(user),
 
                 organization_id=user.organization_id,
 
@@ -2120,7 +2136,7 @@ class AuthService:
 
 
 
-    async def refresh_access_token(
+    def refresh_access_token(
         self,
         refresh_token: str,
     ) -> dict[str, Any]:
@@ -2151,7 +2167,7 @@ class AuthService:
         )
 
 
-        return await self.generate_auth_tokens(
+        return  self.generate_auth_tokens(
             user_id,
         )
         # ============================================================
@@ -2159,7 +2175,7 @@ class AuthService:
     # Permission Checking & Access Control
     # ============================================================
 
-    async def get_user_permissions(
+    def get_user_permissions(
         self,
         user_id: UUID,
     ) -> list[str]:
@@ -2168,7 +2184,7 @@ class AuthService:
         based on assigned role.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -2180,13 +2196,13 @@ class AuthService:
             )
 
 
-        return await self.get_role_permissions(
-            user.role,
+        return  self.get_role_permissions(
+            self.get_primary_role(user),
         )
 
 
 
-    async def has_permission(
+    def has_permission(
         self,
         *,
         user_id: UUID,
@@ -2202,7 +2218,7 @@ class AuthService:
         """
 
         permissions = (
-            await self.get_user_permissions(
+             self.get_user_permissions(
                 user_id,
             )
         )
@@ -2226,7 +2242,7 @@ class AuthService:
 
 
 
-    async def require_permission(
+    def require_permission(
         self,
         *,
         user_id: UUID,
@@ -2236,7 +2252,7 @@ class AuthService:
         Enforce permission check.
         """
 
-        allowed = await self.has_permission(
+        allowed =  self.has_permission(
 
             user_id=user_id,
 
@@ -2282,7 +2298,7 @@ class AuthService:
 
 
 
-    async def check_role_access(
+    def check_role_access(
         self,
         *,
         user_id: UUID,
@@ -2292,7 +2308,7 @@ class AuthService:
         Validate role based access.
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
@@ -2316,7 +2332,7 @@ class AuthService:
 
         authorized = (
 
-            user.role
+            self.get_primary_role(user)
 
             in
 
@@ -2334,7 +2350,7 @@ class AuthService:
 
             "current_role":
 
-                user.role,
+                self.get_primary_role(user),
 
 
             "required_roles":
@@ -2350,7 +2366,7 @@ class AuthService:
 
 
 
-    async def authorize_asset_access(
+    def authorize_asset_access(
         self,
         *,
         user_id: UUID,
@@ -2365,13 +2381,13 @@ class AuthService:
         - User permissions
         """
 
-        user = await self.get_user(
+        user =  self.get_user(
             user_id,
         )
 
 
         asset = (
-            self.db.get(
+             self.db.get(
                 Asset,
                 asset_id,
             )
@@ -2406,7 +2422,7 @@ class AuthService:
         )
 
 
-        permission = await self.has_permission(
+        permission =  self.has_permission(
 
             user_id=user_id,
 
@@ -2448,7 +2464,7 @@ class AuthService:
 
 
 
-    async def get_access_matrix(
+    def get_access_matrix(
         self,
     ) -> dict[str, Any]:
         """
@@ -2482,7 +2498,7 @@ class AuthService:
 
 
 
-    async def validate_api_action(
+    def validate_api_action(
         self,
         *,
         user_id: UUID,
@@ -2494,7 +2510,7 @@ class AuthService:
         Used by API routes.
         """
 
-        allowed = await self.has_permission(
+        allowed =  self.has_permission(
 
             user_id=user_id,
 
@@ -2525,7 +2541,7 @@ class AuthService:
     # Service-to-Service Authentication
     # ============================================================
 
-    async def generate_api_key(
+    def generate_api_key(
         self,
         *,
         user_id: UUID,
@@ -2581,7 +2597,7 @@ class AuthService:
 
 
 
-    async def validate_api_key(
+    def validate_api_key(
         self,
         api_key: str,
     ) -> dict[str, Any]:
@@ -2634,7 +2650,7 @@ class AuthService:
 
 
 
-    async def revoke_api_key(
+    def revoke_api_key(
         self,
         api_key_id: UUID,
     ) -> dict[str, Any]:
@@ -2664,7 +2680,7 @@ class AuthService:
 
 
 
-    async def list_user_api_keys(
+    def list_user_api_keys(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -2699,7 +2715,7 @@ class AuthService:
 
 
 
-    async def authenticate_service(
+    def authenticate_service(
         self,
         *,
         service_name: str,
@@ -2716,7 +2732,7 @@ class AuthService:
         """
 
         validation = (
-            await self.validate_api_key(
+             self.validate_api_key(
                 api_key,
             )
         )
@@ -2759,7 +2775,7 @@ class AuthService:
 
 
 
-    async def create_service_identity(
+    def create_service_identity(
         self,
         *,
         service_name: str,
@@ -2807,7 +2823,7 @@ class AuthService:
 
 
 
-    async def validate_service_permission(
+    def validate_service_permission(
         self,
         *,
         service_permissions: list[str],
@@ -2852,7 +2868,7 @@ class AuthService:
 
 
 
-    async def rotate_api_key(
+    def rotate_api_key(
         self,
         *,
         api_key_id: UUID,
@@ -2947,7 +2963,7 @@ class AuthService:
 
 
 
-    async def enable_mfa(
+    def enable_mfa(
         self,
         *,
         user_id: UUID,
@@ -3011,7 +3027,7 @@ class AuthService:
 
 
 
-    async def verify_mfa_setup(
+    def verify_mfa_setup(
         self,
         *,
         user_id: UUID,
@@ -3053,7 +3069,7 @@ class AuthService:
 
 
 
-    async def disable_mfa(
+    def disable_mfa(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -3088,7 +3104,7 @@ class AuthService:
 
 
 
-    async def generate_mfa_challenge(
+    def generate_mfa_challenge(
         self,
         *,
         user_id: UUID,
@@ -3137,7 +3153,7 @@ class AuthService:
 
 
 
-    async def verify_mfa_challenge(
+    def verify_mfa_challenge(
         self,
         *,
         challenge_id: str,
@@ -3173,7 +3189,7 @@ class AuthService:
 
 
 
-    async def check_mfa_status(
+    def check_mfa_status(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -3212,7 +3228,7 @@ class AuthService:
 
 
 
-    async def enforce_mfa_policy(
+    def enforce_mfa_policy(
         self,
         *,
         role: str,
@@ -3239,7 +3255,7 @@ class AuthService:
 
             "role":
 
-                role,
+                self.get_primary_role(user),
 
 
             "mfa_required":
@@ -3324,7 +3340,7 @@ class AuthService:
 
 
 
-    async def configure_sso_provider(
+    def configure_sso_provider(
         self,
         *,
         organization_id: UUID,
@@ -3392,7 +3408,7 @@ class AuthService:
 
 
 
-    async def generate_sso_login_url(
+    def generate_sso_login_url(
         self,
         *,
         provider: str,
@@ -3458,7 +3474,7 @@ class AuthService:
 
 
 
-    async def validate_sso_response(
+    def validate_sso_response(
         self,
         *,
         provider: str,
@@ -3499,7 +3515,7 @@ class AuthService:
 
 
 
-    async def map_sso_identity(
+    def map_sso_identity(
         self,
         *,
         identity: dict[str, Any],
@@ -3539,7 +3555,7 @@ class AuthService:
 
 
 
-    async def sso_login(
+    def sso_login(
         self,
         *,
         provider: str,
@@ -3551,7 +3567,7 @@ class AuthService:
         """
 
         validation = (
-            await self.validate_sso_response(
+             self.validate_sso_response(
 
                 provider=provider,
 
@@ -3574,7 +3590,7 @@ class AuthService:
 
 
         identity = (
-            await self.map_sso_identity(
+             self.map_sso_identity(
 
                 identity=response,
 
@@ -3609,7 +3625,7 @@ class AuthService:
 
 
 
-    async def disable_sso_provider(
+    def disable_sso_provider(
         self,
         *,
         organization_id: UUID,
@@ -3648,7 +3664,7 @@ class AuthService:
     # Security Activity Reporting
     # ============================================================
 
-    async def create_auth_audit_event(
+    def create_auth_audit_event(
         self,
         *,
         user_id: UUID | None,
@@ -3709,7 +3725,7 @@ class AuthService:
 
 
 
-    async def record_login_success(
+    def record_login_success(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -3717,7 +3733,7 @@ class AuthService:
         Record successful login.
         """
 
-        return await self.create_auth_audit_event(
+        return  self.create_auth_audit_event(
 
             user_id=user_id,
 
@@ -3729,7 +3745,7 @@ class AuthService:
 
 
 
-    async def record_login_failure(
+    def record_login_failure(
         self,
         *,
         email: str,
@@ -3739,7 +3755,7 @@ class AuthService:
         Record failed login attempt.
         """
 
-        return await self.create_auth_audit_event(
+        return  self.create_auth_audit_event(
 
             user_id=None,
 
@@ -3766,7 +3782,7 @@ class AuthService:
 
 
 
-    async def record_permission_change(
+    def record_permission_change(
         self,
         *,
         user_id: UUID,
@@ -3777,7 +3793,7 @@ class AuthService:
         Record RBAC changes.
         """
 
-        return await self.create_auth_audit_event(
+        return  self.create_auth_audit_event(
 
             user_id=user_id,
 
@@ -3802,7 +3818,7 @@ class AuthService:
 
 
 
-    async def record_token_event(
+    def record_token_event(
         self,
         *,
         user_id: UUID,
@@ -3818,7 +3834,7 @@ class AuthService:
         - Revoked
         """
 
-        return await self.create_auth_audit_event(
+        return  self.create_auth_audit_event(
 
             user_id=user_id,
 
@@ -3830,7 +3846,7 @@ class AuthService:
 
 
 
-    async def generate_authentication_report(
+    def generate_authentication_report(
         self,
         *,
         organization_id: UUID | None = None,
@@ -3922,7 +3938,7 @@ class AuthService:
 
 
 
-    async def detect_authentication_anomaly(
+    def detect_authentication_anomaly(
         self,
         *,
         user_id: UUID,
@@ -3985,7 +4001,7 @@ class AuthService:
 
 
 
-    async def export_auth_audit_logs(
+    def export_auth_audit_logs(
         self,
         *,
         organization_id: UUID | None = None,
@@ -4001,7 +4017,7 @@ class AuthService:
         """
 
         report = (
-            await self.generate_authentication_report(
+             self.generate_authentication_report(
 
                 organization_id=organization_id,
 
@@ -4030,7 +4046,7 @@ class AuthService:
     # Maintenance & Health Management
     # ============================================================
 
-    async def health_check(
+    def health_check(
         self,
     ) -> dict[str, Any]:
         """
@@ -4149,7 +4165,7 @@ class AuthService:
 
 
 
-    async def validate_auth_configuration(
+    def validate_auth_configuration(
         self,
     ) -> dict[str, Any]:
         """
@@ -4215,7 +4231,7 @@ class AuthService:
 
 
 
-    async def cleanup_expired_sessions(
+    def cleanup_expired_sessions(
         self,
     ) -> int:
         """
@@ -4231,7 +4247,7 @@ class AuthService:
 
 
 
-    async def revoke_all_user_sessions(
+    def revoke_all_user_sessions(
         self,
         user_id: UUID,
     ) -> dict[str, Any]:
@@ -4266,7 +4282,7 @@ class AuthService:
 
 
 
-    async def rotate_security_keys(
+    def rotate_security_keys(
         self,
     ) -> dict[str, Any]:
         """
@@ -4293,7 +4309,7 @@ class AuthService:
 
 
 
-    async def get_auth_capabilities(
+    def get_auth_capabilities(
         self,
     ) -> dict[str, Any]:
         """
