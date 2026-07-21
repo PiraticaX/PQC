@@ -215,13 +215,9 @@ async def get_current_user(
 
             ),
 
-            roles=payload.get(
-
-                "roles",
-
-                []
-
-            ),
+            roles=[
+                payload.get("role")
+            ] if payload.get("role") else [],
 
             permissions=payload.get(
 
@@ -234,24 +230,10 @@ async def get_current_user(
         )
 
 
-    except Exception as exc:
-
-        logger.warning(
-
-            "Authentication failed: %s",
-
-            str(exc),
-
-        )
-
-
-        raise HTTPException(
-
-            status_code=401,
-
-            detail="Authentication required.",
-
-        )
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        raise
 
 
 

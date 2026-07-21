@@ -55,6 +55,7 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy import func
 
+from app.core.config import settings
 
 from sqlalchemy.orm import Session
 
@@ -147,14 +148,11 @@ class AuthService:
     # ============================================================
 
 
-    SECRET_KEY = (
-        "QSHIELD_SECRET_KEY"
-    )
 
 
-    ALGORITHM = (
-        "HS256"
-    )
+    SECRET_KEY = settings.JWT_SECRET_KEY
+    
+    ALGORITHM = settings.JWT_ALGORITHM  
 
 
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -419,7 +417,7 @@ class AuthService:
 
             "role":
 
-                self.get_primary_role(user),
+                role,
 
 
             "organization_id":
@@ -1108,7 +1106,7 @@ class AuthService:
 
             "role":
 
-                self.get_primary_role(user),
+                role,
 
 
             "organization_id":
@@ -1464,8 +1462,8 @@ class AuthService:
                     "Account disabled.",
 
             }
-
-
+        
+        role = self.get_primary_role(user)
 
         return {
 
@@ -1488,7 +1486,7 @@ class AuthService:
 
             "role":
 
-                self.get_primary_role(user),
+                role,
 
 
             "organization_id":
@@ -1548,6 +1546,9 @@ class AuthService:
                 ),
             )
         )
+        tokens = self.generate_auth_tokens(
+            UUID(authentication["user_id"])
+        )
 
 
         return {
@@ -1566,6 +1567,9 @@ class AuthService:
 
                 session,
 
+            "tokens": 
+                
+                tokens,
 
             "login_time":
 
@@ -1732,6 +1736,7 @@ class AuthService:
         self,
         *,
         user_id: UUID,
+        email: str,
         role: str,
         organization_id: UUID,
     ) -> str:
@@ -1773,8 +1778,11 @@ class AuthService:
 
             "role":
 
-                self.get_primary_role(user),
+                role,
 
+            "email": 
+            
+                email,
 
             "organization_id":
 
@@ -2082,16 +2090,13 @@ class AuthService:
             )
 
 
-        access_token = (
-            self.create_access_token(
+        role = self.get_primary_role(user)
 
-                user_id=user.id,
-
-                role=self.get_primary_role(user),
-
-                organization_id=user.organization_id,
-
-            )
+        access_token = self.create_access_token(
+            user_id=user.id,
+            email=user.email,
+            role=role,
+            organization_id=user.organization_id,
         )
 
 
@@ -2197,7 +2202,7 @@ class AuthService:
 
 
         return  self.get_role_permissions(
-            self.get_primary_role(user),
+            role,
         )
 
 
@@ -2332,7 +2337,7 @@ class AuthService:
 
         authorized = (
 
-            self.get_primary_role(user)
+            role
 
             in
 
@@ -2350,7 +2355,7 @@ class AuthService:
 
             "current_role":
 
-                self.get_primary_role(user),
+                role,
 
 
             "required_roles":
@@ -3255,7 +3260,7 @@ class AuthService:
 
             "role":
 
-                self.get_primary_role(user),
+                role,
 
 
             "mfa_required":

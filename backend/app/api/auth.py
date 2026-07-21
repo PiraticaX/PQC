@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import logging
 
+from app.core.dependencies import CurrentUser, get_current_user
 
 from typing import Any
 
@@ -175,12 +176,9 @@ def login(
 
     try:
 
-        result =  service.authenticate(
-
+        result = service.login(
             email=request.email,
-
             password=request.password,
-
         )
 
 
@@ -320,45 +318,22 @@ def change_password(
 # ============================================================
 
 
-@router.get(
-    "/me",
-)
-def current_user(
-    db: Session = Depends(
-        get_db
-    ),
+@router.get("/me")
+async def current_user(
+    current_user: CurrentUser = Depends(get_current_user),
 ):
     """
     Retrieve current authenticated identity.
-
-    Production:
-
-    Uses JWT dependency.
-
     """
 
     return {
-
-        "authenticated":
-
-            True,
-
-
-        "user":
-
-            {
-
-                "id":
-
-                    "current-user",
-
-
-                "role":
-
-                    "user",
-
-            },
-
+        "authenticated": True,
+        "user": {
+            "id": str(current_user.user_id),
+            "email": current_user.email,
+            "roles": current_user.roles,
+            "permissions": current_user.permissions,
+        },
     }
 
 
